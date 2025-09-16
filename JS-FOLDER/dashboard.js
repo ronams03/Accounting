@@ -1,5 +1,8 @@
 // Dashboard JavaScript
 document.addEventListener('DOMContentLoaded', function() {
+    // Check authentication before initializing dashboard
+    checkAuthentication();
+    
     // Wait for header to load before initializing dashboard functionality
     document.addEventListener('headerLoaded', function() {
         initializeDashboard();
@@ -10,6 +13,90 @@ document.addEventListener('DOMContentLoaded', function() {
         initializeDashboard();
     }
 });
+
+// Check if user is authenticated
+function checkAuthentication() {
+    const isLoggedIn = localStorage.getItem('isLoggedIn');
+    const currentUser = localStorage.getItem('currentUser');
+    
+    if (!isLoggedIn || !currentUser) {
+        // Redirect to login page
+        const isInHtmlFolder = window.location.pathname.includes('/HTML/');
+        if (isInHtmlFolder) {
+            window.location.href = '../login.html';
+        } else {
+            window.location.href = 'login.html';
+        }
+        return false;
+    }
+    
+    // Update user info in header if available
+    try {
+        const user = JSON.parse(currentUser);
+        
+        // Check if user has admin role - only admins can access this dashboard
+        if (user.role !== 'admin') {
+            // Redirect non-admin users to appropriate dashboard
+            if (user.role === 'client') {
+                const isInHtmlFolder = window.location.pathname.includes('/HTML/');
+                if (isInHtmlFolder) {
+                    window.location.href = 'client-dashboard.html';
+                } else {
+                    window.location.href = 'HTML/client-dashboard.html';
+                }
+            } else {
+                // Unknown role, redirect to login
+                const isInHtmlFolder = window.location.pathname.includes('/HTML/');
+                if (isInHtmlFolder) {
+                    window.location.href = '../login.html';
+                } else {
+                    window.location.href = 'login.html';
+                }
+            }
+            return false;
+        }
+        
+        updateUserInfo(user);
+    } catch (error) {
+        console.error('Error parsing user data:', error);
+        // Clear invalid data and redirect to login
+        localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('currentUser');
+        const isInHtmlFolder = window.location.pathname.includes('/HTML/');
+        if (isInHtmlFolder) {
+            window.location.href = '../login.html';
+        } else {
+            window.location.href = 'login.html';
+        }
+        return false;
+    }
+    
+    return true;
+}
+
+// Update user information in the header
+function updateUserInfo(user) {
+    // Wait for header to load
+    setTimeout(() => {
+        const userNameElement = document.querySelector('.user-name');
+        const userRoleElement = document.querySelector('.user-role');
+        const userAvatarElement = document.querySelector('.user-avatar');
+        
+        if (userNameElement) {
+            userNameElement.textContent = user.full_name || user.username || 'User';
+        }
+        
+        if (userRoleElement) {
+            userRoleElement.textContent = user.role || 'User';
+        }
+        
+        if (userAvatarElement) {
+            // Set avatar initials
+            const initials = (user.full_name || user.username || 'U').charAt(0).toUpperCase();
+            userAvatarElement.textContent = initials;
+        }
+    }, 100);
+}
 
 function initializeDashboard() {
     // Load dark mode settings
@@ -752,9 +839,22 @@ function updateActivityTimes() {
 // Logout functionality
 function logout() {
     if (confirm('Are you sure you want to logout?')) {
-        // Clear any stored session data
+        // Clear authentication data
+        localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('currentUser');
         localStorage.removeItem('userSession');
         sessionStorage.clear();
+        
+        // Make API call to logout (if server is available)
+        const apiPath = window.location.pathname.includes('/HTML/') ? '../PHP-FOLDER-API/' : 'PHP-FOLDER-API/';
+        fetch(apiPath + 'auth.php?action=logout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        }).catch(error => {
+            console.log('Logout API call failed, but local logout completed');
+        });
         
         // Redirect to login page
         const isInHtmlFolder = window.location.pathname.includes('/HTML/');

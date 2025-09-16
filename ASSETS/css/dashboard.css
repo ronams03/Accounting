@@ -56,11 +56,23 @@ html {
 
 body {
     font-family: 'Inter', sans-serif;
-    font-size: 14px;
+    font-size: 13px;
     color: #1e293b;
     background: #f8fafc;
     min-height: 100vh;
     overflow-x: hidden;
+}
+
+/* Font Size Hierarchy */
+:root {
+    --font-xs: 10px;
+    --font-sm: 11px;
+    --font-base: 13px;
+    --font-md: 14px;
+    --font-lg: 16px;
+    --font-xl: 18px;
+    --font-2xl: 20px;
+    --font-3xl: 24px;
 }
 
 /* Dark Theme Styles */
@@ -150,7 +162,7 @@ body {
 }
 
 .logo h2 {
-    font-size: 14px;
+    font-size: var(--font-base);
     font-weight: 700;
 }
 
@@ -186,10 +198,10 @@ body {
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 4px 8px;
+    padding: 6px 10px;
     color: rgba(255, 255, 255, 0.8);
     text-decoration: none;
-    font-size: 12px;
+    font-size: var(--font-sm);
     font-weight: 500;
     transition: all 0.3s ease;
     border-radius: 4px;
@@ -207,8 +219,8 @@ body {
 }
 
 .nav-link i {
-    font-size: 12px;
-    min-width: 16px;
+    font-size: var(--font-xs);
+    min-width: 14px;
 }
 
 .sidebar-footer {
@@ -245,12 +257,12 @@ body {
 }
 
 .user-name {
-    font-size: 12px;
+    font-size: var(--font-xs);
     font-weight: 600;
 }
 
 .user-role {
-    font-size: 12px;
+    font-size: var(--font-xs);
     opacity: 0.7;
 }
 

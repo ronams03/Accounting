@@ -49,26 +49,96 @@ document.addEventListener('DOMContentLoaded', function() {
         showLoading(true);
         hideMessages();
 
-        // Simulate authentication process
-        setTimeout(() => {
-            // Mock authentication logic - accept multiple valid credentials (username or email)
-            if ((username === 'admin' && password === 'admin123') || 
-                (username === 'admin' && password === 'admin') ||
-                (username.toLowerCase() === 'administrator' && password === 'admin123') ||
-                (username.toLowerCase() === 'user' && password === 'user123') ||
-                (username.toLowerCase() === 'quads' && password === 'quads123') ||
-                (username.toLowerCase() === 'kristinedais01@gmail.com' && password === 'quads123')) {
-                // Success - redirect directly to dashboard
-                showSuccess('Login successful! Redirecting to dashboard...');
+        // Prepare login data
+        const loginData = {
+            username: username,
+            password: password
+        };
+
+        // Make API call to authenticate
+        fetch('PHP-FOLDER-API/auth.php?action=login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(loginData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            showLoading(false);
+            
+            if (data.success) {
+                // Success - store user data and redirect based on role
+                if (data.data && data.data.user) {
+                    localStorage.setItem('currentUser', JSON.stringify(data.data.user));
+                    localStorage.setItem('isLoggedIn', 'true');
+                    
+                    // Determine redirect URL based on user role
+                    const user = data.data.user;
+                    let redirectUrl;
+                    
+                    if (user.role === 'client') {
+                        redirectUrl = 'HTML/client-dashboard.html';
+                        showSuccess('Login successful! Redirecting to client portal...');
+                    } else if (user.role === 'admin') {
+                        redirectUrl = 'HTML/dashboard.html';
+                        showSuccess('Login successful! Redirecting to admin dashboard...');
+                    } else {
+                        redirectUrl = 'HTML/dashboard.html'; // Default fallback
+                        showSuccess('Login successful! Redirecting to dashboard...');
+                    }
+                    
+                    setTimeout(() => {
+                        window.location.href = redirectUrl;
+                    }, 1500);
+                } else {
+                    showError('Login successful but user data is missing.');
+                }
+            } else {
+                showError(data.message || 'Invalid username or password. Please try again.');
+            }
+        })
+        .catch(error => {
+            showLoading(false);
+            console.error('Login error:', error);
+            
+            // Fallback authentication for development/testing
+            if ((username.toLowerCase() === 'quads' && password === 'quads123') || 
+                (username.toLowerCase() === 'kristinedais01@gmail.com' && password === 'quads123') ||
+                (username.toLowerCase() === 'admin' && password === 'admin123') ||
+                (username.toLowerCase() === 'namoc' && password === 'namoc123') ||
+                (username.toLowerCase() === 'client_acme' && password === 'client123') ||
+                (username.toLowerCase() === 'client_techstart' && password === 'client123')) {
+                
+                // Create mock user data for fallback
+                const mockUser = {
+                    id: 1,
+                    username: username,
+                    email: username.includes('@') ? username : username + '@example.com',
+                    role: username.includes('client') ? 'client' : 'admin',
+                    full_name: username.charAt(0).toUpperCase() + username.slice(1)
+                };
+                
+                localStorage.setItem('currentUser', JSON.stringify(mockUser));
+                localStorage.setItem('isLoggedIn', 'true');
+                
+                // Role-based redirect for fallback authentication
+                let redirectUrl;
+                if (mockUser.role === 'client') {
+                    redirectUrl = 'HTML/client-dashboard.html';
+                    showSuccess('Login successful! Redirecting to client portal...');
+                } else {
+                    redirectUrl = 'HTML/dashboard.html';
+                    showSuccess('Login successful! Redirecting to admin dashboard...');
+                }
+                
                 setTimeout(() => {
-                    window.location.href = 'HTML/dashboard.html';
+                    window.location.href = redirectUrl;
                 }, 1500);
             } else {
-                showError('Invalid username or password. Please try again.');
+                showError('Unable to connect to server. Please check your credentials and try again.');
             }
-            
-            showLoading(false);
-        }, 1500);
+        });
     }
 
 

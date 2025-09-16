@@ -180,6 +180,20 @@ CREATE TABLE client_tasks (
     FOREIGN KEY (task_id) REFERENCES tasks(task_id)
 );
 
+-- Client Documents table
+CREATE TABLE client_documents (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    original_name VARCHAR(255) NOT NULL,
+    file_name VARCHAR(255) NOT NULL,
+    file_size BIGINT NOT NULL,
+    category ENUM('financial', 'tax', 'contracts', 'receipts', 'other') DEFAULT 'other',
+    file_extension VARCHAR(10) NOT NULL,
+    upload_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status ENUM('active', 'deleted') DEFAULT 'active',
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
 -- ===============================
 -- 8. INSERT SAMPLE DATA
 -- ===============================
@@ -190,55 +204,72 @@ INSERT INTO roles (role_name, description) VALUES
 ('co-admin', 'Co-administrator with limited permissions'),
 ('client', 'Client user with restricted access');
 
--- Insert Admin Staff Users
-INSERT INTO users (role_id, username, password, email, full_name, status) VALUES
-(1, 'quads', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'kristinedais01@gmail.com', 'Quads Administrator', 'active'),
-(1, 'Namoc', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'kristinedais10@gmail.com', 'Roberth Namoc', 'active'),
-(1, 'admin_sarah', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'sarah.admin@accounting.com', 'Sarah Johnson', 'active'),
-(1, 'admin_mike', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'mike.admin@accounting.com', 'Michael Brown', 'active');
+-- Insert Admin User (1 only)
+INSERT INTO users (role_id, username, password, email, full_name, role, status) VALUES
+(1, 'admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin@accounting.com', 'System Administrator', 'admin', 'Active');
 
--- Insert Co-Admin Users
-INSERT INTO users (role_id, username, password, email, full_name, status) VALUES
-(2, 'coadmin_lisa', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'lisa.coadmin@accounting.com', 'Lisa Davis', 'active'),
-(2, 'coadmin_david', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'david.coadmin@accounting.com', 'David Wilson', 'active'),
-(2, 'coadmin_emma', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'emma.coadmin@accounting.com', 'Emma Taylor', 'active');
+-- Insert Co-Admin User (1 only)
+INSERT INTO users (role_id, username, password, email, full_name, role, status) VALUES
+(2, 'coadmin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'coadmin@accounting.com', 'Co-Administrator', 'co-admin', 'Active');
 
--- Insert Client Users
-INSERT INTO users (role_id, username, password, email, full_name, status) VALUES
-(3, 'client_acme', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'contact@acmecorp.com', 'Robert Anderson', 'active'),
-(3, 'client_techstart', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin@techstart.com', 'Jennifer Martinez', 'active'),
-(3, 'client_globalltd', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'finance@globalltd.com', 'William Garcia', 'active'),
-(3, 'client_innovate', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'billing@innovateinc.com', 'Jessica Rodriguez', 'active'),
-(3, 'client_retail', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'accounts@retailplus.com', 'Christopher Lee', 'active');
+-- Insert Client User (1 only)
+INSERT INTO users (role_id, username, password, email, full_name, role, status) VALUES
+(3, 'client', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'client@accounting.com', 'Client User', 'client', 'Active');
 
--- Insert user profiles for admin staff
+-- Insert user profiles (1 per role)
 INSERT INTO user_profiles (user_id, address, phone, bio) VALUES
-(1, '123 Admin Street, City, State 12345', '+1234567890', 'Primary System Administrator with full access permissions'),
-(2, '456 Finance Ave, City, State 12345', '+1234567891', 'Senior System Administrator with 5+ years experience'),
-(3, '789 Operations Blvd, City, State 12345', '+1234567892', 'Finance Administrator specializing in accounting systems'),
-(4, '321 Service St, City, State 12345', '+1234567893', 'Operations Administrator managing daily workflows');
+(1, '123 Admin Street, City, State 12345', '+1234567890', 'System Administrator with full access permissions'),
+(2, '456 CoAdmin Ave, City, State 12345', '+1234567891', 'Co-Administrator with limited permissions'),
+(3, '789 Client Blvd, City, State 12345', '+1234567892', 'Client user with restricted access');
 
--- Insert user profiles for co-admin staff
-INSERT INTO user_profiles (user_id, address, phone, bio) VALUES
-(5, '654 Accounting Way, City, State 12345', '+1234567894', 'Client Services Co-Administrator'),
-(6, '987 Support Lane, City, State 12345', '+1234567895', 'Accounting Co-Administrator with data entry focus'),
-(7, '111 Support Lane, City, State 12345', '+1234567896', 'Support Co-Administrator for client assistance');
-
--- Insert user profiles for clients
-INSERT INTO user_profiles (user_id, address, phone, bio) VALUES
-(8, '123 Industrial Ave, Manufacturing City, MC 12345', '+1234567897', 'ACME Corporation contact person'),
-(9, '456 Innovation Blvd, Tech Valley, TV 67890', '+1234567898', 'TechStart Solutions administrator'),
-(10, '789 Commerce St, Trade Center, TC 13579', '+1234567899', 'Global Trading Ltd finance manager'),
-(11, '321 Business Park, Consultant City, CC 24680', '+1234567900', 'Innovate Inc billing contact'),
-(12, '654 Shopping District, Retail Town, RT 97531', '+1234567901', 'Retail Plus accounts manager');
-
--- Insert client records linking to user accounts
+-- Insert client record linking to user account
 INSERT INTO clients (created_by, company_name, contact_person, email, phone, address) VALUES
-(1, 'ACME Corporation', 'John Smith', 'contact@acmecorp.com', '+1234567896', '123 Industrial Ave, Manufacturing City, MC 12345'),
-(1, 'TechStart Solutions', 'Jane Doe', 'admin@techstart.com', '+1234567897', '456 Innovation Blvd, Tech Valley, TV 67890'),
-(1, 'Global Trading Ltd', 'Bob Johnson', 'finance@globalltd.com', '+1234567898', '789 Commerce St, Trade Center, TC 13579'),
-(1, 'Innovate Inc', 'Alice Brown', 'billing@innovateinc.com', '+1234567899', '321 Business Park, Consultant City, CC 24680'),
-(1, 'Retail Plus', 'Charlie Wilson', 'accounts@retailplus.com', '+1234567800', '654 Shopping District, Retail Town, RT 97531');
+(1, 'Sample Client Company', 'Client User', 'client@accounting.com', '+1234567892', '789 Client Blvd, City, State 12345');
+
+-- Invoices table
+CREATE TABLE invoices (
+    invoice_id INT AUTO_INCREMENT PRIMARY KEY,
+    invoice_number VARCHAR(50) NOT NULL UNIQUE,
+    client_id INT NOT NULL,
+    client_user_id INT NOT NULL,
+    amount DECIMAL(10,2) NOT NULL,
+    tax_amount DECIMAL(10,2) DEFAULT 0.00,
+    total_amount DECIMAL(10,2) NOT NULL,
+    status ENUM('Pending', 'Paid', 'Overdue', 'Cancelled') DEFAULT 'Pending',
+    due_date DATE NOT NULL,
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    paid_date TIMESTAMP NULL,
+    description TEXT,
+    FOREIGN KEY (client_id) REFERENCES clients(client_id) ON DELETE CASCADE,
+    FOREIGN KEY (client_user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Invoice items table
+CREATE TABLE invoice_items (
+    item_id INT AUTO_INCREMENT PRIMARY KEY,
+    invoice_id INT NOT NULL,
+    description VARCHAR(255) NOT NULL,
+    quantity INT DEFAULT 1,
+    unit_price DECIMAL(10,2) NOT NULL,
+    total_amount DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (invoice_id) REFERENCES invoices(invoice_id) ON DELETE CASCADE
+);
+
+-- Insert sample invoices
+INSERT INTO invoices (invoice_number, client_id, client_user_id, amount, tax_amount, total_amount, status, due_date, created_date, description) VALUES
+('INV-2024-001', 1, 3, 2500.00, 250.00, 2750.00, 'Pending', '2024-12-30', '2024-12-01', 'Monthly Accounting Services - November 2024'),
+('INV-2024-002', 1, 3, 1800.00, 180.00, 1980.00, 'Paid', '2024-11-30', '2024-11-01', 'Tax Preparation Services Q3 2024'),
+('INV-2024-003', 1, 3, 3200.00, 320.00, 3520.00, 'Overdue', '2024-10-15', '2024-09-15', 'Annual Financial Audit Services');
+
+-- Insert sample invoice items
+INSERT INTO invoice_items (invoice_id, description, quantity, unit_price, total_amount) VALUES
+(1, 'Monthly Bookkeeping Services', 1, 1500.00, 1500.00),
+(1, 'Financial Statement Preparation', 1, 800.00, 800.00),
+(1, 'Payroll Processing', 1, 200.00, 200.00),
+(2, 'Tax Return Preparation', 1, 1200.00, 1200.00),
+(2, 'Tax Planning Consultation', 2, 300.00, 600.00),
+(3, 'Annual Audit Services', 1, 2500.00, 2500.00),
+(3, 'Financial Analysis Report', 1, 700.00, 700.00);
 
 -- ===============================
 -- 9. SECURITY TABLES

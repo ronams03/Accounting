@@ -1,0 +1,2223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Portal - Accounting System</title>
+    <link rel="stylesheet" href="../ASSETS/css/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="../ASSETS/js/header-loader.js"></script>
+    <style>
+        /* Client-specific styles */
+        .client-dashboard {
+            background: #f8fafc;
+            min-height: 100vh;
+            display: flex;
+        }
+        
+        /* Client Sidebar */
+        .client-sidebar {
+            width: 250px;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #8b5cf6 100%);
+            color: white;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+        }
+        
+        .client-sidebar-header {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .client-logo {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .client-logo i {
+            font-size: 14px;
+            color: #fbbf24;
+        }
+        
+        .client-logo h2 {
+            font-size: 13px;
+            font-weight: 700;
+        }
+        
+        .client-nav {
+            flex: 1;
+            padding: 1rem 0;
+        }
+        
+        .client-nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .client-nav-item {
+            margin-bottom: 4px;
+        }
+        
+        .client-nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-size: 11px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border-radius: 6px;
+            margin: 0 12px;
+        }
+        
+        .client-nav-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        
+        .client-nav-item.active .client-nav-link {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+        
+        .client-nav-link i {
+            font-size: 10px;
+            min-width: 14px;
+        }
+        
+        .client-sidebar-footer {
+            padding: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .client-user-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            padding: 8px;
+        }
+        
+        .client-user-avatar {
+            width: 24px;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: #fbbf24;
+        }
+        
+        .client-user-details {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .client-user-name {
+            font-size: 10px;
+            font-weight: 600;
+        }
+        
+        .client-user-role {
+            font-size: 10px;
+            opacity: 0.7;
+        }
+        
+        .client-main-content {
+            flex: 1;
+            margin-left: 250px;
+            background: #f8fafc;
+            min-height: 100vh;
+        }
+        
+        .client-header {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 13px;
+        }
+        
+        .client-welcome {
+            background: white;
+            padding: 1.5rem;
+            margin: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+        }
+        
+        .client-welcome h1 {
+            font-size: 15px;
+            margin-bottom: 0.5rem;
+            color: #1e293b;
+        }
+        
+        .client-welcome p {
+            font-size: 13px;
+            color: #64748b;
+        }
+        
+        .client-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            padding: 0 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto 2rem auto;
+        }
+        
+        .client-stat-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            transition: box-shadow 0.3s ease;
+        }
+        
+        .client-stat-card:hover {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .client-stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            background: #3b82f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            margin-bottom: 1rem;
+        }
+        
+        .client-stat-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 0.5rem;
+        }
+        
+        .client-stat-value {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+        
+        .client-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            padding: 0 1.5rem 2rem 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .client-action-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+        }
+        
+        .client-action-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .client-action-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .client-action-item {
+            padding: 1rem 0;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .client-action-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        
+        .client-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .client-btn:hover {
+            background: #2563eb;
+        }
+        
+        .status-badge {
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-pending {
+            background: #fef3c7;
+            color: #d97706;
+        }
+        
+        .status-completed {
+            background: #d1fae5;
+            color: #059669;
+        }
+        
+        .status-in-progress {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        /* Content Sections */
+        .content-section {
+            display: none;
+            padding: 1.5rem;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .section-header h2 {
+            font-size: 18px;
+            color: #1e293b;
+            margin: 0;
+        }
+
+        /* Invoices Styles */
+        .invoice-filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .invoice-filters select,
+        .invoice-filters input {
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 12px;
+        }
+
+        .invoices-list {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .invoice-item {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Tasks Styles */
+        .task-filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .task-filters select {
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 12px;
+        }
+
+        .task-item {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .priority-badge {
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 500;
+        }
+
+        .priority-high { background: #fee2e2; color: #dc2626; }
+        .priority-medium { background: #fef3c7; color: #d97706; }
+        .priority-low { background: #d1fae5; color: #059669; }
+
+        /* Documents Styles */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .section-header h2 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .documents-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .documents-filters {
+            margin-bottom: 1.5rem;
+        }
+
+        .search-container {
+            position: relative;
+            margin-bottom: 1rem;
+            max-width: 300px;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+            font-size: 12px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 8px 12px 8px 32px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 12px;
+            background: white;
+            transition: border-color 0.2s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .document-categories {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .category-btn {
+            padding: 6px 12px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            border-radius: 6px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .category-btn.active,
+        .category-btn:hover {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+
+        .documents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .document-item {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 0.75rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100px;
+            height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .document-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .document-item:hover .document-overlay {
+            opacity: 1;
+        }
+
+        .document-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .document-action-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: background 0.2s ease;
+        }
+
+        .document-action-btn:hover {
+            background: #2563eb;
+        }
+
+        .document-action-btn.secondary {
+            background: #64748b;
+        }
+
+        .document-action-btn.secondary:hover {
+            background: #475569;
+        }
+
+        .document-info {
+            pointer-events: none;
+        }
+
+        .document-name {
+            font-size: 9px;
+            font-weight: 500;
+            margin-top: 0.25rem;
+            line-height: 1.1;
+            max-height: 20px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .document-meta {
+            font-size: 7px;
+            color: #64748b;
+            margin-top: 1px;
+        }
+
+        .report-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .report-card:hover {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .report-card i {
+            font-size: 24px;
+            color: #3b82f6;
+            margin-bottom: 1rem;
+        }
+
+        .report-card h3 {
+            font-size: 14px;
+            margin-bottom: 0.5rem;
+            color: #1e293b;
+        }
+
+        .report-card p {
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        /* Appointments Styles */
+        .appointments-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .calendar-header button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background: #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .calendar-day {
+            background: white;
+            padding: 8px;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .calendar-day:hover {
+            background: #f1f5f9;
+        }
+
+        .calendar-day.has-appointment {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        /* Support Styles */
+        .support-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .support-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .support-card:hover {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .support-card i {
+            font-size: 24px;
+            color: #3b82f6;
+            margin-bottom: 1rem;
+        }
+
+        .support-card h3 {
+            font-size: 14px;
+            margin-bottom: 0.5rem;
+            color: #1e293b;
+        }
+
+        .support-card p {
+            font-size: 11px;
+            color: #64748b;
+            margin-bottom: 1rem;
+        }
+
+        .status {
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 500;
+        }
+
+        .status.online { background: #d1fae5; color: #059669; }
+        .status.available { background: #dbeafe; color: #2563eb; }
+
+        .faq-item {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            overflow: hidden;
+        }
+
+        .faq-question {
+            padding: 1rem;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 12px;
+        }
+
+        .faq-answer {
+            padding: 0 1rem 1rem 1rem;
+            font-size: 11px;
+            color: #64748b;
+            display: none;
+        }
+
+        .faq-item.active .faq-answer {
+            display: block;
+        }
+
+        /* Document Viewer Modal */
+        .document-viewer-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 9999;
+        }
+
+        .document-viewer-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .document-viewer-container {
+            background: white;
+            border-radius: 8px;
+            width: 90%;
+            height: 90%;
+            max-width: 1200px;
+            max-height: 800px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .document-viewer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            background: #f8fafc;
+        }
+
+        .document-viewer-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .document-viewer-controls {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .viewer-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 11px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .viewer-btn:hover {
+            background: #2563eb;
+        }
+
+        .viewer-btn.secondary {
+            background: #64748b;
+        }
+
+        .viewer-btn.secondary:hover {
+            background: #475569;
+        }
+
+        .document-viewer-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .pdf-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.5rem;
+            background: #f1f5f9;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .page-info {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .zoom-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .zoom-level {
+            font-size: 11px;
+            color: #64748b;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .pdf-viewer {
+            flex: 1;
+            overflow: auto;
+            background: #f8fafc;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 1rem;
+        }
+
+        .pdf-canvas {
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background: white;
+        }
+
+        .document-loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 200px;
+            color: #64748b;
+        }
+
+        .document-loading i {
+            font-size: 24px;
+            margin-bottom: 1rem;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Upload Modal Styles */
+        .upload-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 10000;
+        }
+
+        .upload-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .upload-container {
+            background: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            padding: 2rem;
+            position: relative;
+            overflow-y: auto;
+        }
+
+        .upload-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .upload-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .close-upload {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #64748b;
+            cursor: pointer;
+            padding: 4px;
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            z-index: 10001;
+        }
+
+        .close-upload:hover {
+            color: #1e293b;
+        }
+
+        .upload-area {
+            border: 2px dashed #cbd5e1;
+            border-radius: 8px;
+            padding: 3rem 2rem;
+            text-align: center;
+            background: #f8fafc;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .upload-area:hover, .upload-area.dragover {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            color: #64748b;
+            margin-bottom: 1rem;
+        }
+
+        .upload-text {
+            font-size: 16px;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-subtext {
+            font-size: 12px;
+            color: #64748b;
+            margin-bottom: 1rem;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .upload-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .upload-btn:hover {
+            background: #2563eb;
+        }
+
+        .file-list {
+            margin-top: 1.5rem;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem;
+            background: #f1f5f9;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .file-name {
+            font-size: 12px;
+            font-weight: 500;
+            color: #1e293b;
+        }
+
+        .file-size {
+            font-size: 10px;
+            color: #64748b;
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .remove-file {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            cursor: pointer;
+        }
+
+        .remove-file:hover {
+            background: #b91c1c;
+        }
+
+        .upload-progress {
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #3b82f6;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            font-size: 11px;
+            color: #64748b;
+            margin-top: 0.5rem;
+            text-align: center;
+        }
+
+        .upload-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .cancel-btn {
+            background: #64748b;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .cancel-btn:hover {
+            background: #475569;
+        }
+
+        .upload-submit-btn {
+            background: #059669;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .upload-submit-btn:hover {
+            background: #047857;
+        }
+
+        .upload-submit-btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        /* Task Form Styles */
+        .task-form {
+            padding: 1.5rem 0;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 12px;
+            background: white;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .checklist-container {
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 1rem;
+            background: #f9fafb;
+            margin-bottom: 1rem;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .checklist-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .checklist-input {
+            flex: 1;
+            padding: 6px 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+
+        .remove-checklist-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 6px;
+            cursor: pointer;
+            font-size: 10px;
+        }
+
+        .remove-checklist-btn:hover {
+            background: #dc2626;
+        }
+
+        .add-checklist-btn {
+            background: #10b981;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 6px 12px;
+            cursor: pointer;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .add-checklist-btn:hover {
+            background: #059669;
+        }
+
+        /* Task Details Styles */
+        .task-details-content {
+            padding: 1.5rem;
+        }
+
+        .task-detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .task-detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .task-detail-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: #64748b;
+        }
+
+        .task-detail-value {
+            font-size: 12px;
+            color: #1e293b;
+            text-align: right;
+        }
+
+        .task-checklist {
+            margin-top: 1rem;
+        }
+
+        .task-checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .task-checklist-item:last-child {
+            border-bottom: none;
+        }
+
+        .task-checklist-checkbox {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .task-checklist-text {
+            flex: 1;
+            font-size: 11px;
+            color: #374151;
+        }
+
+        .task-checklist-text.completed {
+            text-decoration: line-through;
+            color: #9ca3af;
+        }
+
+        /* Enhanced Task Item Styles */
+        .task-item {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .task-item:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-color: #3b82f6;
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+        }
+
+        .task-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+
+        .task-description {
+            font-size: 11px;
+            color: #64748b;
+            margin-bottom: 0.5rem;
+        }
+
+        .task-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 10px;
+            color: #9ca3af;
+        }
+
+        .task-client {
+            background: #eff6ff;
+            color: #2563eb;
+            padding: 2px 6px;
+            border-radius: 12px;
+            font-size: 9px;
+            font-weight: 500;
+        }
+
+        .task-progress {
+            margin-top: 0.5rem;
+        }
+
+        .task-progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #e5e7eb;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .task-progress-fill {
+            height: 100%;
+            background: #10b981;
+            transition: width 0.3s ease;
+        }
+
+        .task-progress-text {
+            font-size: 9px;
+            color: #64748b;
+            margin-top: 0.25rem;
+        }
+
+        /* Invoice Styles */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .download-all-btn {
+            background: #4285f4;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .download-all-btn:hover {
+            background: #3367d6;
+        }
+
+        .invoices-filters-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            align-items: center;
+        }
+
+        .invoice-filter-select {
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 12px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .invoice-date-filter {
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 12px;
+            background: white;
+        }
+
+        .invoices-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .invoice-item {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .invoice-item:hover {
+            background: #f9fafb;
+            border-color: #d1d5db;
+        }
+
+        .invoice-left {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .invoice-number {
+            font-size: 14px;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .invoice-description {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .invoice-date {
+            font-size: 11px;
+            color: #9ca3af;
+        }
+
+        .invoice-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .status-paid {
+            background: #d1fae5;
+            color: #059669;
+        }
+
+        .status-overdue {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .invoice-amount {
+            font-size: 16px;
+            font-weight: 600;
+            color: #111827;
+            text-align: right;
+        }
+
+        .invoice-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            font-size: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s;
+        }
+
+        .invoice-btn.primary {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .invoice-btn.primary:hover {
+            background: #2563eb;
+        }
+
+        .invoice-btn.secondary {
+            background: #64748b;
+            color: white;
+        }
+
+        .invoice-btn.secondary:hover {
+            background: #475569;
+        }
+
+        .invoice-btn.success {
+            background: #059669;
+            color: white;
+        }
+
+        .invoice-btn.success:hover {
+            background: #047857;
+        }
+
+        .no-invoices {
+            text-align: center;
+            padding: 3rem;
+            color: #64748b;
+        }
+
+        /* Invoice Modal */
+        .invoice-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .invoice-modal-content {
+            background: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .invoice-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .invoice-modal-header h3 {
+            margin: 0;
+            font-size: 16px;
+            color: #1e293b;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 18px;
+            color: #64748b;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .close-modal:hover {
+            color: #1e293b;
+        }
+
+        .invoice-modal-body {
+            padding: 1.5rem;
+        }
+
+        .invoice-detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .invoice-detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .invoice-detail-row .label {
+            font-size: 12px;
+            font-weight: 500;
+            color: #64748b;
+        }
+
+        .invoice-detail-row .value {
+            font-size: 12px;
+            color: #1e293b;
+            text-align: right;
+        }
+
+        .invoice-modal-actions {
+            display: flex;
+            gap: 0.5rem;
+            padding: 1.5rem;
+            border-top: 1px solid #e2e8f0;
+            justify-content: flex-end;
+        }
+    </style>
+</head>
+<body class="client-dashboard">
+    <!-- Client Sidebar -->
+    <aside class="client-sidebar">
+        <div class="client-sidebar-header">
+            <div class="client-logo">
+                <i class="fas fa-calculator"></i>
+                <h2>Client Portal</h2>
+            </div>
+        </div>
+        
+        <nav class="client-nav">
+            <ul>
+                <li class="client-nav-item active">
+                    <a href="#dashboard" class="client-nav-link" onclick="showSection('dashboard')">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="client-nav-item">
+                    <a href="#invoices" class="client-nav-link" onclick="showSection('invoices')">
+                        <i class="fas fa-file-invoice"></i>
+                        <span>My Invoices</span>
+                    </a>
+                </li>
+                <li class="client-nav-item">
+                    <a href="#tasks" class="client-nav-link" onclick="showSection('tasks')">
+                        <i class="fas fa-tasks"></i>
+                        <span>My Tasks</span>
+                    </a>
+                </li>
+                <li class="client-nav-item">
+                    <a href="#documents" class="client-nav-link" onclick="showSection('documents')">
+                        <i class="fas fa-folder"></i>
+                        <span>Documents</span>
+                    </a>
+                </li>
+                <li class="client-nav-item">
+                    <a href="#reports" class="client-nav-link" onclick="showSection('reports')">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Reports</span>
+                    </a>
+                </li>
+                <li class="client-nav-item">
+                    <a href="#appointments" class="client-nav-link" onclick="showSection('appointments')">
+                        <i class="fas fa-calendar"></i>
+                        <span>Appointments</span>
+                    </a>
+                </li>
+                <li class="client-nav-item">
+                    <a href="#support" class="client-nav-link" onclick="showSection('support')">
+                        <i class="fas fa-headset"></i>
+                        <span>Support</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        
+        <div class="client-sidebar-footer">
+            <div class="client-user-info">
+                <div class="client-user-avatar" id="clientAvatar">C</div>
+                <div class="client-user-details">
+                    <div class="client-user-name" id="clientName">Loading...</div>
+                    <div class="client-user-role">Client</div>
+                </div>
+            </div>
+            <button onclick="logout()" class="client-btn" style="width: 100%; font-size: 10px; padding: 4px;">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="client-main-content">
+        <!-- Content Sections (hidden by default) -->
+        <div id="dashboard-section" class="content-section active">
+            <!-- Welcome Section -->
+            <div class="client-welcome">
+                <h1>Welcome to Your Client Portal</h1>
+                <p>Manage your accounting services and track your financial progress</p>
+            </div>
+
+    <!-- Client Statistics -->
+    <div class="client-stats">
+        <div class="client-stat-card">
+            <div class="client-stat-icon">
+                <i class="fas fa-file-invoice"></i>
+            </div>
+            <div class="client-stat-title">Active Invoices</div>
+            <div class="client-stat-value" id="activeInvoices">3</div>
+        </div>
+        
+        <div class="client-stat-card">
+            <div class="client-stat-icon">
+                <i class="fas fa-tasks"></i>
+            </div>
+            <div class="client-stat-title">Pending Tasks</div>
+            <div class="client-stat-value" id="pendingTasks">2</div>
+        </div>
+        
+        <div class="client-stat-card">
+            <div class="client-stat-icon">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="client-stat-title">Reports This Month</div>
+            <div class="client-stat-value" id="monthlyReports">1</div>
+        </div>
+        
+        <div class="client-stat-card">
+            <div class="client-stat-icon">
+                <i class="fas fa-calendar-check"></i>
+            </div>
+            <div class="client-stat-title">Next Appointment</div>
+            <div class="client-stat-value" style="font-size: 1.2rem;">Dec 15</div>
+        </div>
+    </div>
+
+    <!-- Client Actions -->
+    <div class="client-actions">
+        <!-- Recent Invoices -->
+        <div class="client-action-card">
+            <div class="client-action-title">
+                <i class="fas fa-file-invoice"></i>
+                Recent Invoices
+            </div>
+            <ul class="client-action-list">
+                <li class="client-action-item">
+                    <div>
+                        <strong>INV-2024-001</strong><br>
+                        <small>Monthly Bookkeeping - Nov 2024</small>
+                    </div>
+                    <div>
+                        <span class="status-badge status-pending">Pending</span>
+                        <button class="client-btn" onclick="viewInvoice('INV-2024-001')">View</button>
+                    </div>
+                </li>
+                <li class="client-action-item">
+                    <div>
+                        <strong>INV-2024-002</strong><br>
+                        <small>Tax Preparation Services</small>
+                    </div>
+                    <div>
+                        <span class="status-badge status-completed">Paid</span>
+                        <button class="client-btn" onclick="viewInvoice('INV-2024-002')">View</button>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Current Tasks -->
+        <div class="client-action-card">
+            <div class="client-action-title">
+                <i class="fas fa-tasks"></i>
+                Current Tasks
+            </div>
+            <ul class="client-action-list">
+                <li class="client-action-item">
+                    <div>
+                        <strong>Document Submission</strong><br>
+                        <small>Submit Q4 financial documents</small>
+                    </div>
+                    <div>
+                        <span class="status-badge status-pending">Due Soon</span>
+                        <button class="client-btn" onclick="uploadDocuments()">Upload</button>
+                    </div>
+                </li>
+                <li class="client-action-item">
+                    <div>
+                        <strong>Review Report</strong><br>
+                        <small>Monthly financial summary review</small>
+                    </div>
+                    <div>
+                        <span class="status-badge status-in-progress">In Review</span>
+                        <button class="client-btn" onclick="viewReport()">View</button>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="client-action-card">
+            <div class="client-action-title">
+                <i class="fas fa-bolt"></i>
+                Quick Actions
+            </div>
+            <div style="display: grid; gap: 1rem;">
+                <button class="client-btn" onclick="requestService()" style="width: 100%; padding: 1rem;">
+                    <i class="fas fa-plus"></i> Request New Service
+                </button>
+                <button class="client-btn" onclick="scheduleAppointment()" style="width: 100%; padding: 1rem;">
+                    <i class="fas fa-calendar"></i> Schedule Appointment
+                </button>
+                <button class="client-btn" onclick="contactSupport()" style="width: 100%; padding: 1rem;">
+                    <i class="fas fa-headset"></i> Contact Support
+                </button>
+                <button class="client-btn" onclick="downloadReports()" style="width: 100%; padding: 1rem;">
+                    <i class="fas fa-download"></i> Download Reports
+                </button>
+            </div>
+        </div>
+        </div>
+        </div>
+
+        <!-- My Invoices Section -->
+        <div id="invoices-section" class="content-section">
+            <div class="section-header">
+                <h2>My Invoices</h2>
+                <button class="client-btn download-all-btn" onclick="downloadAllInvoices()">
+                    <i class="fas fa-download"></i> Download All
+                </button>
+            </div>
+            <div class="invoices-filters-row">
+                <select id="invoiceStatusFilter" class="invoice-filter-select" onchange="filterInvoicesByStatus()">
+                    <option value="all">All Status</option>
+                    <option value="pending">Pending</option>
+                    <option value="paid">Paid</option>
+                    <option value="overdue">Overdue</option>
+                </select>
+                <input type="date" id="invoiceDateFilter" class="invoice-date-filter" onchange="filterInvoicesByDate()">
+            </div>
+            <div class="invoices-list" id="invoicesList">
+                <!-- Invoices will be loaded here -->
+            </div>
+        </div>
+
+        <!-- My Tasks Section -->
+        <div id="tasks-section" class="content-section">
+            <div class="section-header">
+                <h2>My Tasks</h2>
+                <button class="client-btn" onclick="addTask()">
+                    <i class="fas fa-plus"></i> New Task
+                </button>
+            </div>
+            <div class="tasks-container">
+                <div class="task-filters">
+                    <select id="taskStatus" onchange="filterTasks()">
+                        <option value="all">All Tasks</option>
+                        <option value="pending">Pending</option>
+                        <option value="in-progress">In Progress</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                    <select id="taskPriority" onchange="filterTasks()">
+                        <option value="all">All Priority</option>
+                        <option value="high">High</option>
+                        <option value="medium">Medium</option>
+                        <option value="low">Low</option>
+                    </select>
+                </div>
+                <div class="tasks-list" id="tasksList">
+                    <!-- Tasks will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Documents Section -->
+        <div id="documents-section" class="content-section">
+            <div class="section-header">
+                <h2>My Documents</h2>
+                <div class="documents-actions">
+                    <button class="client-btn" onclick="openUploadModal()">
+                        <i class="fas fa-upload"></i> Upload Document
+                    </button>
+                </div>
+            </div>
+            <div class="documents-container">
+                <div class="documents-filters">
+                    <div class="search-container">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" id="documentSearch" class="search-input" placeholder="Search documents..." oninput="searchDocuments()">
+                    </div>
+                    <div class="document-categories">
+                        <button class="category-btn active" onclick="filterDocuments('all')">All</button>
+                        <button class="category-btn" onclick="filterDocuments('financial')">Financial</button>
+                        <button class="category-btn" onclick="filterDocuments('tax')">Tax Documents</button>
+                        <button class="category-btn" onclick="filterDocuments('contracts')">Contracts</button>
+                        <button class="category-btn" onclick="filterDocuments('receipts')">Receipts</button>
+                    </div>
+                </div>
+                <div class="documents-grid" id="documentsGrid">
+                    <!-- Documents will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Reports Section -->
+        <div id="reports-section" class="content-section">
+            <div class="section-header">
+                <h2>Financial Reports</h2>
+                <button class="client-btn" onclick="generateCustomReport()">
+                    <i class="fas fa-chart-line"></i> Custom Report
+                </button>
+            </div>
+            <div class="reports-container">
+                <div class="report-types">
+                    <div class="report-card" onclick="generateReport('profit-loss')">
+                        <i class="fas fa-chart-bar"></i>
+                        <h3>Profit & Loss</h3>
+                        <p>View your income and expenses</p>
+                    </div>
+                    <div class="report-card" onclick="generateReport('balance-sheet')">
+                        <i class="fas fa-balance-scale"></i>
+                        <h3>Balance Sheet</h3>
+                        <p>Assets, liabilities, and equity</p>
+                    </div>
+                    <div class="report-card" onclick="generateReport('cash-flow')">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <h3>Cash Flow</h3>
+                        <p>Track money in and out</p>
+                    </div>
+                    <div class="report-card" onclick="generateReport('tax-summary')">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                        <h3>Tax Summary</h3>
+                        <p>Prepare for tax season</p>
+                    </div>
+                </div>
+                <div class="recent-reports" id="recentReports">
+                    <h3>Recent Reports</h3>
+                    <!-- Recent reports will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Appointments Section -->
+        <div id="appointments-section" class="content-section">
+            <div class="section-header">
+                <h2>My Appointments</h2>
+                <button class="client-btn" onclick="bookAppointment()">
+                    <i class="fas fa-calendar-plus"></i> Book Appointment
+                </button>
+            </div>
+            <div class="appointments-container">
+                <div class="calendar-view">
+                    <div class="calendar-header">
+                        <button onclick="previousMonth()">&lt;</button>
+                        <h3 id="currentMonth">December 2024</h3>
+                        <button onclick="nextMonth()">&gt;</button>
+                    </div>
+                    <div class="calendar-grid" id="calendarGrid">
+                        <!-- Calendar will be generated here -->
+                    </div>
+                </div>
+                <div class="appointments-list">
+                    <h3>Upcoming Appointments</h3>
+                    <div id="appointmentsList">
+                        <!-- Appointments will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Support Section -->
+        <div id="support-section" class="content-section">
+            <div class="section-header">
+                <h2>Support Center</h2>
+                <button class="client-btn" onclick="createTicket()">
+                    <i class="fas fa-ticket-alt"></i> New Ticket
+                </button>
+            </div>
+            <div class="support-container">
+                <div class="support-options">
+                    <div class="support-card" onclick="openChat()">
+                        <i class="fas fa-comments"></i>
+                        <h3>Live Chat</h3>
+                        <p>Get instant help from our team</p>
+                        <span class="status online">Online</span>
+                    </div>
+                    <div class="support-card" onclick="callSupport()">
+                        <i class="fas fa-phone"></i>
+                        <h3>Phone Support</h3>
+                        <p>Call us at (555) 123-4567</p>
+                        <span class="status available">Available</span>
+                    </div>
+                    <div class="support-card" onclick="emailSupport()">
+                        <i class="fas fa-envelope"></i>
+                        <h3>Email Support</h3>
+                        <p>Send us an email for detailed help</p>
+                        <span class="status">24/7</span>
+                    </div>
+                </div>
+                <div class="support-tickets">
+                    <h3>My Support Tickets</h3>
+                    <div id="supportTickets">
+                        <!-- Support tickets will be loaded here -->
+                    </div>
+                </div>
+                <div class="faq-section">
+                    <h3>Frequently Asked Questions</h3>
+                    <div class="faq-list" id="faqList">
+                        <!-- FAQ items will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Document Viewer Modal -->
+    <div id="documentViewerModal" class="document-viewer-modal">
+        <div class="document-viewer-container">
+            <div class="document-viewer-header">
+                <div class="document-viewer-title" id="documentTitle">Document Viewer</div>
+                <div class="document-viewer-controls">
+                    <button class="viewer-btn" onclick="downloadCurrentDocument()">
+                        <i class="fas fa-download"></i> Download
+                    </button>
+                    <button class="viewer-btn secondary" onclick="printDocument()">
+                        <i class="fas fa-print"></i> Print
+                    </button>
+                    <button class="viewer-btn secondary" onclick="closeDocumentViewer()">
+                        <i class="fas fa-times"></i> Close
+                    </button>
+                </div>
+            </div>
+            <div class="document-viewer-content">
+                <div class="pdf-controls">
+                    <button class="viewer-btn" onclick="previousPage()" id="prevPageBtn">
+                        <i class="fas fa-chevron-left"></i> Previous
+                    </button>
+                    <span class="page-info">
+                        Page <span id="currentPage">1</span> of <span id="totalPages">1</span>
+                    </span>
+                    <button class="viewer-btn" onclick="nextPage()" id="nextPageBtn">
+                        Next <i class="fas fa-chevron-right"></i>
+                    </button>
+                    <div class="zoom-controls">
+                        <button class="viewer-btn" onclick="zoomOut()">
+                            <i class="fas fa-search-minus"></i>
+                        </button>
+                        <span class="zoom-level" id="zoomLevel">100%</span>
+                        <button class="viewer-btn" onclick="zoomIn()">
+                            <i class="fas fa-search-plus"></i>
+                        </button>
+                        <button class="viewer-btn" onclick="fitToWidth()">
+                            <i class="fas fa-arrows-alt-h"></i> Fit Width
+                        </button>
+                    </div>
+                </div>
+                <div class="pdf-viewer" id="pdfViewer">
+                    <div class="document-loading" id="documentLoading">
+                        <i class="fas fa-spinner"></i>
+                        <span>Loading document...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Task Creation Modal -->
+    <div id="taskModal" class="upload-modal">
+        <div class="upload-container" style="max-width: 700px;">
+            <div class="upload-header">
+                <div class="upload-title">Create New Task</div>
+                <button class="close-upload" onclick="closeTaskModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="task-form">
+                <div class="form-group">
+                    <label for="taskTitle">Task Title *</label>
+                    <input type="text" id="taskTitle" class="form-input" placeholder="Enter task title" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="taskDescription">Description</label>
+                    <textarea id="taskDescription" class="form-textarea" placeholder="Enter task description" rows="3"></textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="taskClient">Assign to Client *</label>
+                        <select id="taskClient" class="form-select" required>
+                            <option value="">Select Client</option>
+                            <option value="client_acme">ACME Corporation</option>
+                            <option value="client_techstart">TechStart Inc.</option>
+                            <option value="client_globalltd">Global Ltd.</option>
+                            <option value="client_innovate">Innovate Solutions</option>
+                            <option value="client_retail">Retail Plus</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="taskPrioritySelect">Priority *</label>
+                        <select id="taskPrioritySelect" class="form-select" required>
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="taskDueDate">Due Date</label>
+                        <input type="date" id="taskDueDate" class="form-input">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="taskCategory">Category</label>
+                        <select id="taskCategory" class="form-select">
+                            <option value="general">General</option>
+                            <option value="accounting">Accounting</option>
+                            <option value="tax">Tax Preparation</option>
+                            <option value="audit">Audit</option>
+                            <option value="consultation">Consultation</option>
+                            <option value="document">Document Review</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Checklist Items</label>
+                    <div class="checklist-container" id="checklistContainer">
+                        <div class="checklist-item">
+                            <input type="text" class="checklist-input" placeholder="Enter checklist item">
+                            <button type="button" class="remove-checklist-btn" onclick="removeChecklistItem(this)">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="button" class="add-checklist-btn" onclick="addChecklistItem()">
+                        <i class="fas fa-plus"></i> Add Checklist Item
+                    </button>
+                </div>
+            </div>
+            
+            <div class="upload-actions">
+                <button class="cancel-btn" onclick="closeTaskModal()">Cancel</button>
+                <button class="upload-submit-btn" onclick="createNewTask()">
+                    Create Task
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Task Details Modal -->
+    <div id="taskDetailsModal" class="upload-modal" onclick="closeTaskDetailsModal()">
+        <div class="upload-container" style="max-width: 600px;" onclick="event.stopPropagation()">
+            <div class="upload-header">
+                <div class="upload-title" id="taskDetailsTitle">Task Details</div>
+                <button class="close-upload" onclick="closeTaskDetailsModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="task-details-content" id="taskDetailsContent">
+                <!-- Task details will be loaded here -->
+            </div>
+            
+            <div class="upload-actions">
+                <button class="cancel-btn" onclick="closeTaskDetailsModal()">Close</button>
+                <button class="upload-submit-btn" id="updateTaskBtn" onclick="updateTaskStatus()">
+                    Update Status
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Modal -->
+    <div id="uploadModal" class="upload-modal">
+        <div class="upload-container">
+            <div class="upload-header">
+                <div class="upload-title">Upload Documents</div>
+                <button class="close-upload" onclick="closeUploadModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+                <div class="upload-icon">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                </div>
+                <div class="upload-text">Drag & drop files here or click to browse</div>
+                <div class="upload-subtext">Supports all file formats up to 5GB per file</div>
+                <button class="upload-btn" type="button">Choose Files</button>
+                <input type="file" id="fileInput" class="file-input" multiple accept="*/*">
+            </div>
+            
+            <div class="file-list" id="fileList"></div>
+            
+            <div class="upload-progress" id="uploadProgress">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-text" id="progressText">Uploading...</div>
+            </div>
+            
+            <div class="upload-actions">
+                <button class="cancel-btn" onclick="closeUploadModal()">Cancel</button>
+                <button class="upload-submit-btn" id="uploadSubmitBtn" onclick="submitUpload()" disabled>
+                    Upload Files
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="../JS-FOLDER/client-dashboard.js"></script>
+</body>
+</html>
