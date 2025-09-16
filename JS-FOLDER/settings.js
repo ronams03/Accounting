@@ -64,24 +64,27 @@ function setupNavigation() {
     const navLinks = document.querySelectorAll('.nav-link');
     navLinks.forEach(link => {
         link.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            // Remove active class from all nav items
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            
-            // Add active class to clicked nav item
-            this.parentElement.classList.add('active');
-            
-            // Handle navigation routing
-            const href = this.getAttribute('href');
-            handleNavigation(href);
-            
-            // Update header title
-            const headerTitle = document.querySelector('.header h1');
-            const linkText = this.querySelector('span').textContent;
-            headerTitle.textContent = linkText;
+            const href = this.getAttribute('href') || '';
+            // Only intercept hash links; allow real pages to navigate normally
+            if (href.startsWith('#')) {
+                e.preventDefault();
+                
+                // Remove active class from all nav items
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                // Add active class to clicked nav item
+                this.parentElement.classList.add('active');
+                
+                // Handle navigation routing
+                handleNavigation(href);
+                
+                // Update header title
+                const headerTitle = document.querySelector('.header h1');
+                const linkText = this.querySelector('span').textContent;
+                if (headerTitle) headerTitle.textContent = linkText;
+            }
         });
     });
 }
