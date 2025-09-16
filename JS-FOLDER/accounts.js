@@ -176,7 +176,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	}
 
 	function attachEventHandlers() {
-		const newBtn = document.getElementById('newAccountBtn');
+		const newBtn = document.getElementById('newAccountBtn') || document.querySelector('.section-header .btn-primary');
 		if (newBtn) newBtn.addEventListener('click', openNewAccountModal);
 		const search = document.getElementById('accSearch');
 		const typeSel = document.getElementById('accType');
