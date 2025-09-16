@@ -1,0 +1,293 @@
+<!-- Modular Header Component -->
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <div class="logo">
+            <i class="fas fa-calculator"></i>
+            <h2>Accounting</h2>
+        </div>
+        <button class="sidebar-toggle" id="sidebarToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+    </div>
+
+    <nav class="sidebar-nav">
+        <ul>
+            <li class="nav-item" data-page="dashboard">
+                <a href="dashboard.html" class="nav-link" data-tooltip="Dashboard">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item" data-page="users">
+                <a href="user-management.html" class="nav-link" data-tooltip="User Management">
+                    <i class="fas fa-users"></i>
+                    <span>User Management</span>
+                </a>
+            </li>
+            <li class="nav-item" data-page="accounts">
+                <a href="#accounts" class="nav-link" data-tooltip="Chart of Accounts">
+                    <i class="fas fa-book"></i>
+                    <span>Chart of Accounts</span>
+                </a>
+            </li>
+            <li class="nav-item" data-page="transactions">
+                <a href="#transactions" class="nav-link" data-tooltip="Transactions">
+                    <i class="fas fa-exchange-alt"></i>
+                    <span>Transactions</span>
+                </a>
+            </li>
+            <li class="nav-item" data-page="reports">
+                <a href="#reports" class="nav-link" data-tooltip="Reports">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Reports</span>
+                </a>
+            </li>
+            <li class="nav-item" data-page="departments">
+                <a href="#departments" class="nav-link" data-tooltip="Departments">
+                    <i class="fas fa-building"></i>
+                    <span>Departments</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    
+    <div class="sidebar-footer">
+        <div class="user-info">
+            <div class="user-avatar">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="user-details">
+                <div class="user-name">Admin User</div>
+                <div class="user-role">Administrator</div>
+            </div>
+        </div>
+    </div>
+</aside>
+
+<!-- Main Header -->
+<header class="header">
+    <div class="header-left">
+        <button class="mobile-toggle" id="mobileToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+        <h1 id="pageTitle">Dashboard</h1>
+    </div>
+    <div class="header-right">
+        <div class="header-actions">
+            <button class="notification-btn" id="notificationBtn">
+                <i class="fas fa-bell"></i>
+                <span class="notification-badge">3</span>
+            </button>
+            <div class="user-menu">
+                <button class="user-menu-btn" id="userMenuBtn">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <span>Admin</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- User Menu Dropdown (Hidden by default) -->
+<div class="user-menu-dropdown" id="userMenuDropdown" style="display: none;">
+    <div class="dropdown-item" onclick="openProfileModal()">
+        <i class="fas fa-user"></i>
+        <span>Profile</span>
+    </div>
+    <div class="dropdown-item" onclick="window.location.href='settings.html'">
+        <i class="fas fa-cog"></i>
+        <span>Settings</span>
+    </div>
+    <div class="dropdown-item" onclick="logout()">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>Logout</span>
+    </div>
+</div>
+
+<script>
+// Header functionality script
+(function() {
+    // Set active navigation item based on current page
+    function setActiveNavItem() {
+        const currentPage = window.location.pathname.split('/').pop().replace('.html', '') || 'dashboard';
+        const navItems = document.querySelectorAll('.nav-item');
+        
+        navItems.forEach(item => {
+            item.classList.remove('active');
+            const page = item.getAttribute('data-page');
+            if (page === currentPage || (currentPage === '' && page === 'dashboard')) {
+                item.classList.add('active');
+            }
+        });
+    }
+
+    // Set page title based on current page
+    function setPageTitle() {
+        const currentPage = window.location.pathname.split('/').pop().replace('.html', '') || 'dashboard';
+        const pageTitle = document.getElementById('pageTitle');
+        
+        const titles = {
+            'dashboard': 'Dashboard',
+            'user-management': 'User Management',
+            'settings': 'Settings'
+        };
+        
+        if (pageTitle && titles[currentPage]) {
+            pageTitle.textContent = titles[currentPage];
+        }
+    }
+
+    // Sidebar toggle functionality
+    function initSidebarToggle() {
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const mobileToggle = document.getElementById('mobileToggle');
+        const mainContent = document.getElementById('mainContent');
+
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('collapsed');
+                if (mainContent) {
+                    mainContent.classList.toggle('sidebar-collapsed');
+                }
+            });
+        }
+
+        if (mobileToggle) {
+            mobileToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('mobile-open');
+            });
+        }
+
+        // Close sidebar on mobile when clicking outside
+        document.addEventListener('click', function(e) {
+            if (window.innerWidth <= 768) {
+                if (!sidebar.contains(e.target) && !mobileToggle.contains(e.target)) {
+                    sidebar.classList.remove('mobile-open');
+                }
+            }
+        });
+    }
+
+    // User menu dropdown functionality
+    function initUserMenu() {
+        const userMenuBtn = document.getElementById('userMenuBtn');
+        const userMenuDropdown = document.getElementById('userMenuDropdown');
+
+        if (userMenuBtn && userMenuDropdown) {
+            userMenuBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                userMenuDropdown.style.display = userMenuDropdown.style.display === 'none' ? 'block' : 'none';
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function() {
+                userMenuDropdown.style.display = 'none';
+            });
+        }
+    }
+
+    // Logout function
+    window.logout = function() {
+        if (confirm('Are you sure you want to logout?')) {
+            // Clear any stored session data
+            localStorage.removeItem('userSession');
+            sessionStorage.clear();
+            
+            // Redirect to login page
+            window.location.href = '../login.html';
+        }
+    };
+
+    // Profile modal function
+    window.openProfileModal = function() {
+        const profileModal = document.getElementById('profileModal');
+        if (profileModal) {
+            profileModal.style.display = 'flex';
+            profileModal.classList.add('show');
+        } else {
+            // If no profile modal exists, show a simple alert
+            alert('Profile functionality will be available soon.');
+        }
+    };
+
+    // Close profile modal function
+    window.closeProfileModal = function() {
+        const profileModal = document.getElementById('profileModal');
+        if (profileModal) {
+            profileModal.style.display = 'none';
+            profileModal.classList.remove('show');
+        }
+    };
+
+    // Load and apply dark mode settings
+    function loadDarkModeSettings() {
+        const settings = JSON.parse(localStorage.getItem('accountingSettings') || '{}');
+        const themeMode = settings.themeMode || 'light';
+        
+        applyThemeMode(themeMode);
+    }
+
+    // Apply theme mode function
+    function applyThemeMode(mode) {
+        const body = document.body;
+        const dashboardContainer = document.querySelector('.dashboard-container');
+        const mainContent = document.querySelector('.main-content');
+        
+        // Remove existing theme classes
+        body.classList.remove('dark-theme');
+        if (dashboardContainer) dashboardContainer.classList.remove('dark-theme');
+        if (mainContent) mainContent.classList.remove('dark-theme');
+        
+        if (mode === 'dark') {
+            body.classList.add('dark-theme');
+            if (dashboardContainer) dashboardContainer.classList.add('dark-theme');
+            if (mainContent) mainContent.classList.add('dark-theme');
+        } else if (mode === 'auto') {
+            // Check system preference
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (prefersDark) {
+                body.classList.add('dark-theme');
+                if (dashboardContainer) dashboardContainer.classList.add('dark-theme');
+                if (mainContent) mainContent.classList.add('dark-theme');
+            }
+        }
+    }
+
+    // Listen for storage changes to sync dark mode across tabs
+    window.addEventListener('storage', function(e) {
+        if (e.key === 'accountingSettings') {
+            loadDarkModeSettings();
+        }
+    });
+
+    // Listen for system theme changes
+    if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+            const settings = JSON.parse(localStorage.getItem('accountingSettings') || '{}');
+            if (settings.themeMode === 'auto') {
+                loadDarkModeSettings();
+            }
+        });
+    }
+
+    // Initialize header functionality when DOM is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        setActiveNavItem();
+        setPageTitle();
+        initSidebarToggle();
+        initUserMenu();
+        loadDarkModeSettings();
+    });
+
+    // Update active nav item when page changes (for SPA-like behavior)
+    window.addEventListener('popstate', function() {
+        setActiveNavItem();
+        setPageTitle();
+    });
+})();
+</script>

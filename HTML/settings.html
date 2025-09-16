@@ -1,0 +1,2187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Accounting System</title>
+    <link rel="stylesheet" href="../ASSETS/css/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="../ASSETS/js/header-loader.js"></script>
+    <style>
+        /* Settings Specific Styles */
+        .settings-content {
+            padding: 8px 12px;
+            flex: 1;
+            overflow-y: auto;
+            max-height: calc(100vh - 60px);
+        }
+
+        .settings-tabs {
+            display: flex;
+            border-bottom: 1px solid #e9ecef;
+            margin-bottom: 12px;
+        }
+
+        .settings-tab {
+            padding: 6px 12px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 12px;
+            color: #6c757d;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .settings-tab.active {
+            color: #007bff;
+            border-bottom-color: #007bff;
+        }
+
+        .settings-tab:hover {
+            color: #007bff;
+        }
+
+        .settings-panel {
+            display: none;
+        }
+
+        .settings-panel.active {
+            display: block;
+        }
+
+        .settings-section {
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #e9ecef;
+            margin-bottom: 8px;
+            overflow: hidden;
+        }
+
+        .settings-section-header {
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 12px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .settings-section-content {
+            padding: 12px;
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            border-bottom: 1px solid #f1f3f4;
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+
+        .setting-info {
+            flex: 1;
+        }
+
+        .setting-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: #2c3e50;
+            margin-bottom: 2px;
+        }
+
+        .setting-description {
+            font-size: 11px;
+            color: #6c757d;
+        }
+
+        .setting-control {
+            margin-left: 12px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 40px;
+            height: 20px;
+            background: #ccc;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .toggle-switch.active {
+            background: #007bff;
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: white;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s;
+        }
+
+        .toggle-switch.active::after {
+            transform: translateX(20px);
+        }
+
+        .form-input-small {
+            width: 120px;
+            padding: 4px 6px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .form-select-small {
+            width: 140px;
+            padding: 4px 6px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .btn-small {
+            padding: 4px 8px;
+            border: none;
+            border-radius: 4px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-primary-small {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-primary-small:hover {
+            background: #0056b3;
+        }
+
+        .btn-danger-small {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger-small:hover {
+            background: #c82333;
+        }
+
+        .btn-secondary-small {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary-small:hover {
+            background: #545b62;
+        }
+
+        .color-picker {
+            width: 40px;
+            height: 24px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .backup-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .status-indicator.online {
+            background: #28a745;
+        }
+
+        .status-indicator.warning {
+            background: #ffc107;
+        }
+
+        .status-indicator.offline {
+            background: #dc3545;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e9ecef;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 4px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #007bff;
+            transition: width 0.3s ease;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 8px 12px;
+            border-radius: 4px;
+            color: white;
+            font-size: 12px;
+            z-index: 1001;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success { background: #28a745; }
+        .notification.error { background: #dc3545; }
+        .notification.warning { background: #ffc107; color: #212529; }
+        .notification.info { background: #17a2b8; }
+
+        .notification-content {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Modern Settings Styles */
+        .overview-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .overview-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            padding: 16px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .card-content {
+            flex: 1;
+        }
+
+        .card-title {
+            font-size: 11px;
+            opacity: 0.8;
+            margin-bottom: 4px;
+        }
+
+        .card-value {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .modern-settings-section {
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .section-icon {
+            width: 36px;
+            height: 36px;
+            background: #007bff;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+
+        .section-info h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin: 0 0 4px 0;
+        }
+
+        .section-info p {
+            font-size: 11px;
+            color: #6c757d;
+            margin: 0;
+        }
+
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            padding: 20px;
+        }
+
+        .setting-card {
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        .setting-card:hover {
+            border-color: #007bff;
+            box-shadow: 0 2px 8px rgba(0, 123, 255, 0.1);
+        }
+
+        .setting-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 12px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .setting-body {
+            padding: 16px;
+        }
+
+        .setting-hint {
+            color: #6c757d;
+            font-size: 10px;
+            margin-top: 6px;
+            display: block;
+        }
+
+        .modern-select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 12px;
+            background: white;
+            transition: border-color 0.2s ease;
+        }
+
+        .modern-select:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+        }
+
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 6px 0;
+        }
+
+        .radio-option input[type="radio"] {
+            display: none;
+        }
+
+        .radio-custom {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #ced4da;
+            border-radius: 50%;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        .radio-option input[type="radio"]:checked + .radio-custom {
+            border-color: #007bff;
+        }
+
+        .radio-option input[type="radio"]:checked + .radio-custom::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: #007bff;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .radio-label {
+            font-size: 12px;
+            color: #495057;
+        }
+
+        .radio-label small {
+            color: #6c757d;
+            font-size: 10px;
+        }
+
+        .toggle-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .toggle-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .toggle-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            color: #495057;
+        }
+
+        .toggle-label input[type="checkbox"] {
+            display: none;
+        }
+
+        .toggle-slider {
+            width: 36px;
+            height: 20px;
+            background: #ccc;
+            border-radius: 20px;
+            position: relative;
+            transition: background 0.3s ease;
+        }
+
+        .toggle-slider::after {
+            content: '';
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s ease;
+        }
+
+        .toggle-label input[type="checkbox"]:checked + .toggle-slider {
+            background: #007bff;
+        }
+
+        .toggle-label input[type="checkbox"]:checked + .toggle-slider::after {
+            transform: translateX(16px);
+        }
+
+        .interval-selector {
+            margin-top: 8px;
+        }
+
+        .interval-selector label {
+            font-size: 11px;
+            color: #6c757d;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .interval-buttons {
+            display: flex;
+            gap: 4px;
+        }
+
+        .interval-btn {
+            padding: 4px 8px;
+            border: 1px solid #ced4da;
+            background: white;
+            border-radius: 4px;
+            font-size: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .interval-btn:hover {
+            border-color: #007bff;
+        }
+
+        .interval-btn.active {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+
+        .number-input-group {
+            margin-bottom: 12px;
+        }
+
+        .number-input-group label {
+            font-size: 11px;
+            color: #6c757d;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .number-selector {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .number-btn {
+            width: 28px;
+            height: 28px;
+            border: 1px solid #ced4da;
+            background: white;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .number-btn:hover {
+            border-color: #007bff;
+            background: #f8f9fa;
+        }
+
+        .number-selector input {
+            width: 60px;
+            padding: 4px 6px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .quick-options {
+            display: flex;
+            gap: 4px;
+        }
+
+        .quick-btn {
+            padding: 4px 8px;
+            border: 1px solid #ced4da;
+            background: white;
+            border-radius: 4px;
+            font-size: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .quick-btn:hover {
+            border-color: #007bff;
+        }
+
+        .quick-btn.active {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+
+        /* General Sub-navigation Styles */
+        .general-subnav {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .general-subnav-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #495057;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .general-subnav-btn:hover {
+            border-color: #007bff;
+            background: #f8f9fa;
+        }
+
+        .general-subnav-btn.active {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+
+        .general-subnav-btn i {
+            font-size: 14px;
+        }
+
+        .general-section {
+            display: none;
+        }
+
+        .general-section.active {
+            display: block;
+        }
+
+        /* Appearance Settings Styles */
+        .theme-preview-card {
+            grid-column: 1 / -1;
+        }
+
+        .theme-preview {
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            overflow: hidden;
+            background: #f8f9fa;
+            min-height: 200px;
+        }
+
+        .preview-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: var(--primary-color, #007bff);
+            color: white;
+            font-size: 12px;
+        }
+
+        .preview-logo {
+            font-size: 16px;
+        }
+
+        .preview-title {
+            font-weight: 600;
+        }
+
+        .preview-content {
+            display: flex;
+            height: 150px;
+        }
+
+        .preview-sidebar {
+            width: 60px;
+            background: #2c3e50;
+            padding: 8px 4px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .preview-nav-item {
+            padding: 4px 6px;
+            border-radius: 3px;
+            font-size: 10px;
+            color: #bdc3c7;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .preview-nav-item.active {
+            background: var(--primary-color, #007bff);
+            color: white;
+        }
+
+        .preview-main {
+            flex: 1;
+            padding: 8px;
+            background: white;
+        }
+
+        .preview-card {
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .preview-card-header {
+            padding: 6px 8px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .preview-card-content {
+            padding: 8px;
+            font-size: 10px;
+            color: #6c757d;
+        }
+
+        .color-palette {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .color-option {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .color-option:hover {
+            transform: scale(1.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .color-option.active {
+            border-color: #2c3e50;
+            transform: scale(1.1);
+        }
+
+        .color-option.active::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .custom-color-section {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .custom-color-section label {
+            font-size: 11px;
+            color: #6c757d;
+        }
+
+        .color-picker-modern {
+            width: 40px;
+            height: 32px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            cursor: pointer;
+            background: none;
+        }
+
+        .font-size-selector {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .font-size-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: 12px 8px;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex: 1;
+        }
+
+        .font-size-option:hover {
+            border-color: #007bff;
+            background: #f8f9fa;
+        }
+
+        .font-size-option.active {
+            border-color: #007bff;
+            background: #e3f2fd;
+        }
+
+        .font-preview {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .font-size-option span {
+            font-size: 10px;
+            color: #6c757d;
+        }
+
+        /* Comprehensive Dark theme styles */
+        .dark-theme {
+            background: #1a1a1a !important;
+            color: #e9ecef !important;
+        }
+
+        /* Dashboard container and main content */
+        .dark-theme .dashboard-container {
+            background: #1a1a1a !important;
+        }
+
+        .dark-theme .main-content {
+            background: #1a1a1a !important;
+            color: #e9ecef !important;
+        }
+
+        /* Settings content */
+        .dark-theme .settings-content {
+            background: #1a1a1a !important;
+            color: #e9ecef !important;
+        }
+
+        /* Settings tabs */
+        .dark-theme .settings-tabs {
+            background: #2c3e50 !important;
+            border-color: #495057 !important;
+        }
+
+        .dark-theme .settings-tab {
+            background: #343a40 !important;
+            color: #adb5bd !important;
+            border-color: #495057 !important;
+        }
+
+        .dark-theme .settings-tab:hover {
+            background: #495057 !important;
+            color: #e9ecef !important;
+        }
+
+        .dark-theme .settings-tab.active {
+            background: var(--primary-color, #007bff) !important;
+            color: white !important;
+            border-color: var(--primary-color, #007bff) !important;
+        }
+
+        /* Settings panels */
+        .dark-theme .settings-panel {
+            background: #1a1a1a !important;
+        }
+
+        /* Modern settings sections */
+        .dark-theme .modern-settings-section {
+            background: #2c3e50 !important;
+            border-color: #495057 !important;
+        }
+
+        .dark-theme .section-header {
+            background: #343a40 !important;
+            border-color: #495057 !important;
+        }
+
+        .dark-theme .section-icon {
+            background: var(--primary-color, #007bff) !important;
+            color: white !important;
+        }
+
+        .dark-theme .section-info h3 {
+            color: #e9ecef !important;
+        }
+
+        .dark-theme .section-info p {
+            color: #adb5bd !important;
+        }
+
+        /* Setting cards */
+        .dark-theme .setting-card {
+            background: #343a40 !important;
+            border-color: #495057 !important;
+        }
+
+        .dark-theme .setting-card:hover {
+            border-color: var(--primary-color, #007bff) !important;
+            box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2) !important;
+        }
+
+        .dark-theme .setting-header {
+            background: #495057 !important;
+            border-color: #6c757d !important;
+            color: #e9ecef !important;
+        }
+
+        .dark-theme .setting-body {
+            background: #343a40 !important;
+            color: #e9ecef !important;
+        }
+
+        /* Form elements */
+        .dark-theme .modern-select {
+            background: #495057 !important;
+            border-color: #6c757d !important;
+            color: #e9ecef !important;
+        }
+
+        .dark-theme .modern-select:focus {
+            border-color: var(--primary-color, #007bff) !important;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2) !important;
+        }
+
+        .dark-theme .modern-select option {
+            background: #495057 !important;
+            color: #e9ecef !important;
+        }
+
+        /* Radio buttons */
+        .dark-theme .radio-custom {
+            border-color: #6c757d !important;
+            background: #343a40 !important;
+        }
+
+        .dark-theme .radio-option input[type="radio"]:checked + .radio-custom {
+            border-color: var(--primary-color, #007bff) !important;
+        }
+
+        .dark-theme .radio-option input[type="radio"]:checked + .radio-custom::after {
+            background: var(--primary-color, #007bff) !important;
+        }
+
+        .dark-theme .radio-label {
+            color: #e9ecef !important;
+        }
+
+        .dark-theme .radio-label small {
+            color: #adb5bd !important;
+        }
+
+        /* Toggle switches */
+        .dark-theme .toggle-slider {
+            background: #6c757d !important;
+        }
+
+        .dark-theme .toggle-label input[type="checkbox"]:checked + .toggle-slider {
+            background: var(--primary-color, #007bff) !important;
+        }
+
+        .dark-theme .toggle-label {
+            color: #e9ecef !important;
+        }
+
+        /* Font size options */
+        .dark-theme .font-size-option {
+            background: #495057 !important;
+            border-color: #6c757d !important;
+            color: #e9ecef !important;
+        }
+
+        .dark-theme .font-size-option:hover {
+            background: #6c757d !important;
+            border-color: var(--primary-color, #007bff) !important;
+        }
+
+        .dark-theme .font-size-option.active {
+            background: var(--primary-color, #007bff) !important;
+            border-color: var(--primary-color, #007bff) !important;
+            color: white !important;
+        }
+
+        .dark-theme .font-preview {
+            color: #e9ecef !important;
+        }
+
+        .dark-theme .font-size-option span {
+            color: #adb5bd !important;
+        }
+
+        /* Color picker */
+        .dark-theme .color-picker-modern {
+            border-color: #6c757d !important;
+            background: #495057 !important;
+        }
+
+        .dark-theme .custom-color-section label {
+            color: #adb5bd !important;
+        }
+
+        /* Number inputs */
+        .dark-theme .number-selector input {
+            background: #495057 !important;
+            border-color: #6c757d !important;
+            color: #e9ecef !important;
+        }
+
+        .dark-theme .number-btn {
+            background: #495057 !important;
+            border-color: #6c757d !important;
+            color: #e9ecef !important;
+        }
+
+        .dark-theme .number-btn:hover {
+            background: #6c757d !important;
+            border-color: var(--primary-color, #007bff) !important;
+        }
+
+        .dark-theme .number-input-group label {
+            color: #adb5bd !important;
+        }
+
+        /* Overview cards */
+        .dark-theme .overview-card {
+            background: linear-gradient(135deg, #495057 0%, #343a40 100%) !important;
+            color: #e9ecef !important;
+        }
+
+        .dark-theme .card-icon {
+            background: rgba(255, 255, 255, 0.1) !important;
+        }
+
+        .dark-theme .card-title {
+            color: #adb5bd !important;
+        }
+
+        .dark-theme .card-value {
+            color: #e9ecef !important;
+        }
+
+        /* Theme preview */
+        .dark-theme .theme-preview {
+            background: #2c3e50 !important;
+            border-color: #495057 !important;
+        }
+
+        .dark-theme .preview-main {
+            background: #343a40 !important;
+        }
+
+        .dark-theme .preview-card {
+            border-color: #495057 !important;
+        }
+
+        .dark-theme .preview-card-header {
+            background: #495057 !important;
+            border-color: #6c757d !important;
+            color: #e9ecef !important;
+        }
+
+        .dark-theme .preview-card-content {
+            color: #adb5bd !important;
+        }
+
+        /* General sub-navigation */
+        .dark-theme .general-subnav {
+            background: #2c3e50 !important;
+            border-color: #495057 !important;
+        }
+
+        .dark-theme .general-subnav-btn {
+            background: #343a40 !important;
+            border-color: #495057 !important;
+            color: #adb5bd !important;
+        }
+
+        .dark-theme .general-subnav-btn:hover {
+            background: #495057 !important;
+            border-color: #6c757d !important;
+            color: #e9ecef !important;
+        }
+
+        .dark-theme .general-subnav-btn.active {
+            background: var(--primary-color, #007bff) !important;
+            border-color: var(--primary-color, #007bff) !important;
+            color: white !important;
+        }
+
+        /* Settings hints and labels */
+        .dark-theme .setting-hint {
+            color: #6c757d !important;
+        }
+
+        /* Buttons */
+        .dark-theme .btn-primary {
+            background: var(--primary-color, #007bff) !important;
+            border-color: var(--primary-color, #007bff) !important;
+        }
+
+        .dark-theme .btn-primary:hover {
+            background: var(--primary-color-dark, #0056b3) !important;
+            border-color: var(--primary-color-dark, #0056b3) !important;
+        }
+
+        /* Scrollbars for dark theme */
+        .dark-theme ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .dark-theme ::-webkit-scrollbar-track {
+            background: #2c3e50;
+        }
+
+        .dark-theme ::-webkit-scrollbar-thumb {
+            background: #495057;
+            border-radius: 4px;
+        }
+
+        .dark-theme ::-webkit-scrollbar-thumb:hover {
+            background: #6c757d;
+        }
+
+        /* Compact mode styles */
+        .compact-mode .settings-grid {
+            gap: 8px;
+            padding: 12px;
+        }
+
+        .compact-mode .setting-card {
+            margin-bottom: 4px;
+        }
+
+        .compact-mode .setting-header {
+            padding: 6px 8px;
+        }
+
+        .compact-mode .setting-body {
+            padding: 8px;
+        }
+
+        /* Reduced animations */
+        .reduced-animations * {
+            transition: none !important;
+            animation: none !important;
+        }
+
+        /* Font family styles */
+        .font-inter { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+        .font-roboto { font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif; }
+        .font-opensans { font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, sans-serif; }
+        .font-lato { font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif; }
+        .font-sourcesans { font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, sans-serif; }
+
+        /* Content layout styles */
+        .boxed-layout .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Sidebar width customization */
+        .sidebar-narrow { width: 200px; }
+        .sidebar-wide { width: 300px; }
+        .sidebar-extra-wide { width: 350px; }
+
+        /* Consistent font sizing enforcement (12-14px range) */
+        .settings-content * {
+            font-size: clamp(12px, 1em, 14px);
+        }
+
+        .settings-tab {
+            font-size: 12px;
+        }
+
+        .section-info h3 {
+            font-size: 14px;
+        }
+
+        .section-info p {
+            font-size: 12px;
+        }
+
+        .setting-header {
+            font-size: 12px;
+        }
+
+        .setting-hint {
+            font-size: 11px;
+        }
+
+        .radio-label {
+            font-size: 12px;
+        }
+
+        .radio-label small {
+            font-size: 11px;
+        }
+
+        .toggle-label {
+            font-size: 12px;
+        }
+
+        .modern-select {
+            font-size: 12px;
+        }
+
+        .font-size-option span {
+            font-size: 11px;
+        }
+
+        .custom-color-section label {
+            font-size: 12px;
+        }
+
+        .number-input-group label {
+            font-size: 12px;
+        }
+
+        /* Enhanced minimal spacing */
+        .settings-grid {
+            gap: 8px;
+            padding: 12px;
+        }
+
+        .setting-card {
+            margin-bottom: 6px;
+        }
+
+        .setting-header {
+            padding: 6px 8px;
+        }
+
+        .setting-body {
+            padding: 8px;
+        }
+
+        .section-header {
+            padding: 8px 12px;
+        }
+
+        .radio-option {
+            padding: 4px 0;
+        }
+
+        .toggle-item {
+            margin-bottom: 6px;
+        }
+
+        .color-palette {
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .font-size-selector {
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        .font-size-option {
+            padding: 8px 6px;
+        }
+
+        .custom-color-section {
+            margin-top: 6px;
+        }
+
+        .number-input-group {
+            margin-bottom: 8px;
+        }
+
+        .toggle-group {
+            gap: 8px;
+        }
+
+        /* Improved visual hierarchy */
+        .overview-cards {
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .overview-card {
+            padding: 8px 12px;
+        }
+
+        .card-icon {
+            width: 32px;
+            height: 32px;
+            font-size: 14px;
+        }
+
+        .card-title {
+            font-size: 11px;
+            margin-bottom: 2px;
+        }
+
+        .card-value {
+            font-size: 13px;
+        }
+
+        /* Modern button styling */
+        .btn-primary {
+            background: var(--primary-color, #007bff);
+            border: 1px solid var(--primary-color, #007bff);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-color-dark, #0056b3);
+            border-color: var(--primary-color-dark, #0056b3);
+        }
+
+        /* Responsive improvements */
+        @media (max-width: 768px) {
+            .settings-grid {
+                grid-template-columns: 1fr;
+                gap: 6px;
+                padding: 8px;
+            }
+
+            .color-palette {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .font-size-selector {
+                flex-direction: column;
+                gap: 6px;
+            }
+
+            .overview-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Accessibility improvements */
+        .color-option:focus,
+        .font-size-option:focus,
+        .radio-option:focus-within,
+        .toggle-label:focus-within {
+            outline: 2px solid var(--primary-color, #007bff);
+            outline-offset: 2px;
+        }
+
+        /* Animation improvements */
+        .setting-card {
+            transition: all 0.2s ease;
+        }
+
+        .setting-card:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .color-option,
+        .font-size-option {
+            transition: all 0.2s ease;
+        }
+
+        /* Theme preview enhancements */
+        .theme-preview {
+            transition: all 0.3s ease;
+        }
+
+        .preview-nav-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header will be loaded dynamically -->
+        
+        <!-- Main Content -->
+        <main class="main-content" id="mainContent">
+
+            <!-- Settings Content -->
+            <div class="settings-content">
+                <!-- Settings Tabs -->
+                <div class="settings-tabs">
+                    <button class="settings-tab active" data-tab="general">General</button>
+                    <button class="settings-tab" data-tab="appearance">Appearance</button>
+                    <button class="settings-tab" data-tab="notifications">Notifications</button>
+                    <button class="settings-tab" data-tab="security">Security</button>
+                    <button class="settings-tab" data-tab="backup">Backup</button>
+                    <button class="settings-tab" data-tab="system">System</button>
+                </div>
+
+                <!-- General Settings Panel -->
+                <div class="settings-panel active" id="general-panel">
+                    <!-- General Sub-navigation -->
+                    <div class="general-subnav">
+                        <button class="general-subnav-btn active" data-section="localization">
+                            <i class="fas fa-globe-americas"></i>
+                            <span>Localization & Regional Settings</span>
+                        </button>
+                        <button class="general-subnav-btn" data-section="system-behavior">
+                            <i class="fas fa-cogs"></i>
+                            <span>System Behavior & Performance</span>
+                        </button>
+                    </div>
+
+                    <!-- System Overview Cards -->
+                    <div class="overview-cards">
+                        <div class="overview-card">
+                            <div class="card-icon">
+                                <i class="fas fa-globe"></i>
+                            </div>
+                            <div class="card-content">
+                                <div class="card-title">System Language</div>
+                                <div class="card-value" id="currentLanguage">English</div>
+                            </div>
+                        </div>
+                        <div class="overview-card">
+                            <div class="card-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="card-content">
+                                <div class="card-title">Current Time</div>
+                                <div class="card-value" id="currentTime">--:--:--</div>
+                            </div>
+                        </div>
+                        <div class="overview-card">
+                            <div class="card-icon">
+                                <i class="fas fa-dollar-sign"></i>
+                            </div>
+                            <div class="card-content">
+                                <div class="card-title">Default Currency</div>
+                                <div class="card-value" id="currentCurrency">USD ($)</div>
+                            </div>
+                        </div>
+                        <div class="overview-card">
+                            <div class="card-icon">
+                                <i class="fas fa-save"></i>
+                            </div>
+                            <div class="card-content">
+                                <div class="card-title">Auto-save</div>
+                                <div class="card-value" id="currentAutosave">Every 1 min</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Localization Settings Section -->
+                    <div class="general-section active" id="localization-section">
+                        <div class="modern-settings-section">
+                            <div class="section-header">
+                                <div class="section-icon">
+                                    <i class="fas fa-globe-americas"></i>
+                                </div>
+                                <div class="section-info">
+                                    <h3>Localization & Regional Settings</h3>
+                                    <p>Configure language, timezone, and regional preferences</p>
+                                </div>
+                            </div>
+                        <div class="settings-grid">
+                            <div class="setting-card">
+                                <div class="setting-header">
+                                    <i class="fas fa-language"></i>
+                                    <span>Display Language</span>
+                                </div>
+                                <div class="setting-body">
+                                    <select class="modern-select" id="language" onchange="updateLanguage(this.value)">
+                                        <option value="en" selected>🇺🇸 English</option>
+                                        <option value="es">🇪🇸 Spanish</option>
+                                        <option value="fr">🇫🇷 French</option>
+                                        <option value="de">🇩🇪 German</option>
+                                        <option value="zh">🇨🇳 Chinese</option>
+                                        <option value="ja">🇯🇵 Japanese</option>
+                                    </select>
+                                    <small class="setting-hint">Interface language for the entire system</small>
+                                </div>
+                            </div>
+
+                            <div class="setting-card">
+                                <div class="setting-header">
+                                    <i class="fas fa-clock"></i>
+                                    <span>Time Zone</span>
+                                </div>
+                                <div class="setting-body">
+                                    <select class="modern-select" id="timezone" onchange="updateTimezone(this.value)">
+                                        <option value="UTC-12">(UTC-12:00) International Date Line West</option>
+                                        <option value="UTC-8">(UTC-08:00) Pacific Time (US & Canada)</option>
+                                        <option value="UTC-5">(UTC-05:00) Eastern Time (US & Canada)</option>
+                                        <option value="UTC+0">(UTC+00:00) Greenwich Mean Time</option>
+                                        <option value="UTC+1">(UTC+01:00) Central European Time</option>
+                                        <option value="UTC+8" selected>(UTC+08:00) Asia/Manila, Singapore</option>
+                                        <option value="UTC+9">(UTC+09:00) Japan, Korea</option>
+                                    </select>
+                                    <small class="setting-hint">All timestamps will be displayed in this timezone</small>
+                                </div>
+                            </div>
+
+                            <div class="setting-card">
+                                <div class="setting-header">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <span>Date Format</span>
+                                </div>
+                                <div class="setting-body">
+                                    <div class="radio-group">
+                                        <label class="radio-option">
+                                            <input type="radio" name="dateFormat" value="MM/DD/YYYY" checked onchange="updateDateFormat(this.value)">
+                                            <span class="radio-custom"></span>
+                                            <span class="radio-label">MM/DD/YYYY <small>(01/15/2024)</small></span>
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="dateFormat" value="DD/MM/YYYY" onchange="updateDateFormat(this.value)">
+                                            <span class="radio-custom"></span>
+                                            <span class="radio-label">DD/MM/YYYY <small>(15/01/2024)</small></span>
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="dateFormat" value="YYYY-MM-DD" onchange="updateDateFormat(this.value)">
+                                            <span class="radio-custom"></span>
+                                            <span class="radio-label">YYYY-MM-DD <small>(2024-01-15)</small></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="setting-card">
+                                <div class="setting-header">
+                                    <i class="fas fa-coins"></i>
+                                    <span>Currency Settings</span>
+                                </div>
+                                <div class="setting-body">
+                                    <select class="modern-select" id="currency" onchange="updateCurrency(this.value)">
+                                        <option value="USD" selected>🇺🇸 US Dollar (USD) - $</option>
+                                        <option value="EUR">🇪🇺 Euro (EUR) - €</option>
+                                        <option value="GBP">🇬🇧 British Pound (GBP) - £</option>
+                                        <option value="JPY">🇯🇵 Japanese Yen (JPY) - ¥</option>
+                                        <option value="PHP">🇵🇭 Philippine Peso (PHP) - ₱</option>
+                                        <option value="CNY">🇨🇳 Chinese Yuan (CNY) - ¥</option>
+                                        <option value="CAD">🇨🇦 Canadian Dollar (CAD) - C$</option>
+                                        <option value="AUD">🇦🇺 Australian Dollar (AUD) - A$</option>
+                                    </select>
+                                    <small class="setting-hint">Default currency for all financial calculations</small>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+                    <!-- System Behavior Settings Section -->
+                    <div class="general-section" id="system-behavior-section">
+                        <div class="modern-settings-section">
+                        <div class="section-header">
+                            <div class="section-icon">
+                                <i class="fas fa-cogs"></i>
+                            </div>
+                            <div class="section-info">
+                                <h3>System Behavior & Performance</h3>
+                                <p>Configure how the system operates and displays data</p>
+                            </div>
+                        </div>
+                        <div class="settings-grid">
+                            <div class="setting-card">
+                                <div class="setting-header">
+                                    <i class="fas fa-save"></i>
+                                    <span>Auto-save Settings</span>
+                                </div>
+                                <div class="setting-body">
+                                    <div class="toggle-group">
+                                        <div class="toggle-item">
+                                            <label class="toggle-label">
+                                                <input type="checkbox" id="enableAutosave" checked onchange="toggleAutosave(this.checked)">
+                                                <span class="toggle-slider"></span>
+                                                Enable Auto-save
+                                            </label>
+                                        </div>
+                                        <div class="interval-selector" id="autosaveInterval">
+                                            <label>Save Interval:</label>
+                                            <div class="interval-buttons">
+                                                <button class="interval-btn" data-value="30" onclick="setAutosaveInterval(30)">30s</button>
+                                                <button class="interval-btn active" data-value="60" onclick="setAutosaveInterval(60)">1m</button>
+                                                <button class="interval-btn" data-value="300" onclick="setAutosaveInterval(300)">5m</button>
+                                                <button class="interval-btn" data-value="600" onclick="setAutosaveInterval(600)">10m</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <small class="setting-hint">Automatically save changes to prevent data loss</small>
+                                </div>
+                            </div>
+
+                            <div class="setting-card">
+                                <div class="setting-header">
+                                    <i class="fas fa-table"></i>
+                                    <span>Data Display</span>
+                                </div>
+                                <div class="setting-body">
+                                    <div class="number-input-group">
+                                        <label>Records per page:</label>
+                                        <div class="number-selector">
+                                            <button class="number-btn" onclick="changeRecordsPerPage(-5)">-</button>
+                                            <input type="number" id="recordsPerPage" value="25" min="5" max="100" step="5" onchange="updateRecordsPerPage(this.value)">
+                                            <button class="number-btn" onclick="changeRecordsPerPage(5)">+</button>
+                                        </div>
+                                    </div>
+                                    <div class="quick-options">
+                                        <button class="quick-btn" onclick="setRecordsPerPage(10)">10</button>
+                                        <button class="quick-btn active" onclick="setRecordsPerPage(25)">25</button>
+                                        <button class="quick-btn" onclick="setRecordsPerPage(50)">50</button>
+                                        <button class="quick-btn" onclick="setRecordsPerPage(100)">100</button>
+                                    </div>
+                                    <small class="setting-hint">Number of records displayed in tables and lists</small>
+                                </div>
+                            </div>
+
+                            <div class="setting-card">
+                                <div class="setting-header">
+                                    <i class="fas fa-search"></i>
+                                    <span>Search & Filtering</span>
+                                </div>
+                                <div class="setting-body">
+                                    <div class="toggle-group">
+                                        <div class="toggle-item">
+                                            <label class="toggle-label">
+                                                <input type="checkbox" id="enableInstantSearch" checked onchange="toggleInstantSearch(this.checked)">
+                                                <span class="toggle-slider"></span>
+                                                Instant Search
+                                            </label>
+                                        </div>
+                                        <div class="toggle-item">
+                                            <label class="toggle-label">
+                                                <input type="checkbox" id="enableAdvancedFilters" checked onchange="toggleAdvancedFilters(this.checked)">
+                                                <span class="toggle-slider"></span>
+                                                Advanced Filters
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <small class="setting-hint">Configure search and filtering behavior</small>
+                                </div>
+                            </div>
+
+                            <div class="setting-card">
+                                <div class="setting-header">
+                                    <i class="fas fa-history"></i>
+                                    <span>Data Retention</span>
+                                </div>
+                                <div class="setting-body">
+                                    <select class="modern-select" id="dataRetention" onchange="updateDataRetention(this.value)">
+                                        <option value="30">30 days</option>
+                                        <option value="90">90 days</option>
+                                        <option value="180">6 months</option>
+                                        <option value="365" selected>1 year</option>
+                                        <option value="1095">3 years</option>
+                                        <option value="0">Keep forever</option>
+                                    </select>
+                                    <small class="setting-hint">How long to keep activity logs and temporary data</small>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Appearance Settings Panel -->
+                <div class="settings-panel" id="appearance-panel">
+                    <!-- Theme Preview Section -->
+                    <div class="modern-settings-section">
+                        <div class="section-header">
+                            <div class="section-icon">
+                                <i class="fas fa-eye"></i>
+                            </div>
+                            <div class="section-info">
+                                <h3>Theme Preview</h3>
+                                <p>See how your changes will look in real-time</p>
+                            </div>
+                        </div>
+                        <div class="settings-grid">
+                            <div class="setting-card theme-preview-card">
+                                <div class="setting-header">
+                                    <i class="fas fa-desktop"></i>
+                                    <span>Theme Preview</span>
+                                </div>
+                                <div class="setting-body">
+                                    <div class="theme-preview" id="themePreview">
+                                        <div class="preview-header">
+                                            <div class="preview-logo">📊</div>
+                                            <div class="preview-title">Accounting System</div>
+                                        </div>
+                                        <div class="preview-content">
+                                            <div class="preview-sidebar">
+                                                <div class="preview-nav-item active">Dashboard</div>
+                                                <div class="preview-nav-item">Users</div>
+                                                <div class="preview-nav-item">Settings</div>
+                                            </div>
+                                            <div class="preview-main">
+                                                <div class="preview-card">
+                                                    <div class="preview-card-header">Sample Card</div>
+                                                    <div class="preview-card-content">Content area with your selected theme</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Theme & Colors Section -->
+                    <div class="modern-settings-section">
+                        <div class="section-header">
+                            <div class="section-icon">
+                                <i class="fas fa-palette"></i>
+                            </div>
+                            <div class="section-info">
+                                <h3>Theme & Colors</h3>
+                                <p>Customize the visual appearance of your interface</p>
+                            </div>
+                        </div>
+                        <div class="settings-grid">
+                            <div class="setting-card">
+                                <div class="setting-header">
+                                    <i class="fas fa-moon"></i>
+                                    <span>Theme Mode</span>
+                                </div>
+                                <div class="setting-body">
+                                    <div class="radio-group">
+                                        <label class="radio-option">
+                                            <input type="radio" name="themeMode" value="light" checked onchange="updateThemeMode(this.value)">
+                                            <span class="radio-custom"></span>
+                                            <span class="radio-label">Light Mode <small>Clean and bright interface</small></span>
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="themeMode" value="dark" onchange="updateThemeMode(this.value)">
+                                            <span class="radio-custom"></span>
+                                            <span class="radio-label">Dark Mode <small>Easy on the eyes</small></span>
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="themeMode" value="auto" onchange="updateThemeMode(this.value)">
+                                            <span class="radio-custom"></span>
+                                            <span class="radio-label">Auto Mode <small>Follow system preference</small></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="setting-card">
+                                <div class="setting-header">
+                                    <i class="fas fa-paint-brush"></i>
+                                    <span>Primary Color</span>
+                                </div>
+                                <div class="setting-body">
+                                    <div class="color-palette">
+                                        <div class="color-option active" data-color="#007bff" style="background: #007bff;" onclick="selectPrimaryColor('#007bff')"></div>
+                                        <div class="color-option" data-color="#28a745" style="background: #28a745;" onclick="selectPrimaryColor('#28a745')"></div>
+                                        <div class="color-option" data-color="#dc3545" style="background: #dc3545;" onclick="selectPrimaryColor('#dc3545')"></div>
+                                        <div class="color-option" data-color="#ffc107" style="background: #ffc107;" onclick="selectPrimaryColor('#ffc107')"></div>
+                                        <div class="color-option" data-color="#6f42c1" style="background: #6f42c1;" onclick="selectPrimaryColor('#6f42c1')"></div>
+                                        <div class="color-option" data-color="#fd7e14" style="background: #fd7e14;" onclick="selectPrimaryColor('#fd7e14')"></div>
+                                        <div class="color-option" data-color="#20c997" style="background: #20c997;" onclick="selectPrimaryColor('#20c997')"></div>
+                                        <div class="color-option" data-color="#6c757d" style="background: #6c757d;" onclick="selectPrimaryColor('#6c757d')"></div>
+                                    </div>
+                                    <div class="custom-color-section">
+                                        <label>Custom Color:</label>
+                                        <input type="color" class="color-picker-modern" id="customPrimaryColor" value="#007bff" onchange="selectPrimaryColor(this.value)">
+                                    </div>
+                                    <small class="setting-hint">Choose your preferred accent color for buttons and highlights</small>
+                                </div>
+                            </div>
+
+                            <div class="setting-card">
+                                <div class="setting-header">
+                                    <i class="fas fa-adjust"></i>
+                                    <span>Interface Density</span>
+                                </div>
+                                <div class="setting-body">
+                                    <div class="toggle-group">
+                                        <div class="toggle-item">
+                                            <label class="toggle-label">
+                                                <input type="checkbox" id="compactMode" checked onchange="toggleCompactMode(this.checked)">
+                                                <span class="toggle-slider"></span>
+                                                Compact Mode
+                                            </label>
+                                        </div>
+                                        <div class="toggle-item">
+                                            <label class="toggle-label">
+                                                <input type="checkbox" id="reducedAnimations" onchange="toggleReducedAnimations(this.checked)">
+                                                <span class="toggle-slider"></span>
+                                                Reduce Animations
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <small class="setting-hint">Adjust spacing and animation preferences</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Typography Section -->
+                    <div class="modern-settings-section">
+                        <div class="section-header">
+                            <div class="section-icon">
+                                <i class="fas fa-font"></i>
+                            </div>
+                            <div class="section-info">
+                                <h3>Typography</h3>
+                                <p>Configure text appearance and readability</p>
+                            </div>
+                        </div>
+                        <div class="settings-grid">
+                            <div class="setting-card">
+                                <div class="setting-header">
+                                    <i class="fas fa-text-height"></i>
+                                    <span>Font Size</span>
+                                </div>
+                                <div class="setting-body">
+                                    <div class="font-size-selector">
+                                        <div class="font-size-option" data-size="11" onclick="selectFontSize(11)">
+                                            <div class="font-preview" style="font-size: 11px;">Aa</div>
+                                            <span>Small (11px)</span>
+                                        </div>
+                                        <div class="font-size-option active" data-size="12" onclick="selectFontSize(12)">
+                                            <div class="font-preview" style="font-size: 12px;">Aa</div>
+                                            <span>Normal (12px)</span>
+                                        </div>
+                                        <div class="font-size-option" data-size="14" onclick="selectFontSize(14)">
+                                            <div class="font-preview" style="font-size: 14px;">Aa</div>
+                                            <span>Large (14px)</span>
+                                        </div>
+                                    </div>
+                                    <small class="setting-hint">Choose comfortable text size for better readability</small>
+                                </div>
+                            </div>
+
+                            <div class="setting-card">
+                                <div class="setting-header">
+                                    <i class="fas fa-font"></i>
+                                    <span>Font Family</span>
+                                </div>
+                                <div class="setting-body">
+                                    <select class="modern-select" id="fontFamily" onchange="updateFontFamily(this.value)">
+                                        <option value="system" selected>System Default</option>
+                                        <option value="inter">Inter (Modern)</option>
+                                        <option value="roboto">Roboto (Clean)</option>
+                                        <option value="opensans">Open Sans (Friendly)</option>
+                                        <option value="lato">Lato (Professional)</option>
+                                        <option value="sourcesans">Source Sans Pro</option>
+                                    </select>
+                                    <small class="setting-hint">Select your preferred font family</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Layout & Navigation Section -->
+                    <div class="modern-settings-section">
+                        <div class="section-header">
+                            <div class="section-icon">
+                                <i class="fas fa-th-large"></i>
+                            </div>
+                            <div class="section-info">
+                                <h3>Layout & Navigation</h3>
+                                <p>Customize the layout and navigation behavior</p>
+                            </div>
+                        </div>
+                        <div class="settings-grid">
+                            <div class="setting-card">
+                                <div class="setting-header">
+                                    <i class="fas fa-bars"></i>
+                                    <span>Sidebar Settings</span>
+                                </div>
+                                <div class="setting-body">
+                                    <div class="number-input-group">
+                                        <label>Sidebar Width (px):</label>
+                                        <div class="number-selector">
+                                            <button class="number-btn" onclick="changeSidebarWidth(-10)">-</button>
+                                            <input type="number" id="sidebarWidth" value="250" min="200" max="350" step="10" onchange="updateSidebarWidth(this.value)">
+                                            <button class="number-btn" onclick="changeSidebarWidth(10)">+</button>
+                                        </div>
+                                    </div>
+                                    <div class="toggle-group">
+                                        <div class="toggle-item">
+                                            <label class="toggle-label">
+                                                <input type="checkbox" id="collapsibleSidebar" checked onchange="toggleCollapsibleSidebar(this.checked)">
+                                                <span class="toggle-slider"></span>
+                                                Collapsible Sidebar
+                                            </label>
+                                        </div>
+                                        <div class="toggle-item">
+                                            <label class="toggle-label">
+                                                <input type="checkbox" id="sidebarIcons" checked onchange="toggleSidebarIcons(this.checked)">
+                                                <span class="toggle-slider"></span>
+                                                Show Navigation Icons
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <small class="setting-hint">Customize sidebar appearance and behavior</small>
+                                </div>
+                            </div>
+
+                            <div class="setting-card">
+                                <div class="setting-header">
+                                    <i class="fas fa-window-maximize"></i>
+                                    <span>Content Layout</span>
+                                </div>
+                                <div class="setting-body">
+                                    <div class="radio-group">
+                                        <label class="radio-option">
+                                            <input type="radio" name="contentLayout" value="fluid" checked onchange="updateContentLayout(this.value)">
+                                            <span class="radio-custom"></span>
+                                            <span class="radio-label">Fluid Layout <small>Full width content</small></span>
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="contentLayout" value="boxed" onchange="updateContentLayout(this.value)">
+                                            <span class="radio-custom"></span>
+                                            <span class="radio-label">Boxed Layout <small>Centered with max width</small></span>
+                                        </label>
+                                    </div>
+                                    <small class="setting-hint">Choose how content is displayed on the page</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notifications Settings Panel -->
+                <div class="settings-panel" id="notifications-panel">
+                    <div class="settings-section">
+                        <div class="settings-section-header">
+                            <i class="fas fa-bell"></i> Notification Preferences
+                        </div>
+                        <div class="settings-section-content">
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <div class="setting-label">Email Notifications</div>
+                                    <div class="setting-description">Receive notifications via email</div>
+                                </div>
+                                <div class="setting-control">
+                                    <div class="toggle-switch active" id="emailNotifications" onclick="toggleSetting('emailNotifications')"></div>
+                                </div>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <div class="setting-label">Browser Notifications</div>
+                                    <div class="setting-description">Show desktop notifications</div>
+                                </div>
+                                <div class="setting-control">
+                                    <div class="toggle-switch active" id="browserNotifications" onclick="toggleSetting('browserNotifications')"></div>
+                                </div>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <div class="setting-label">Sound Alerts</div>
+                                    <div class="setting-description">Play sound for notifications</div>
+                                </div>
+                                <div class="setting-control">
+                                    <div class="toggle-switch" id="soundAlerts" onclick="toggleSetting('soundAlerts')"></div>
+                                </div>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <div class="setting-label">User Activity Alerts</div>
+                                    <div class="setting-description">Notify when users login/logout</div>
+                                </div>
+                                <div class="setting-control">
+                                    <div class="toggle-switch active" id="userActivityAlerts" onclick="toggleSetting('userActivityAlerts')"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security Settings Panel -->
+                <div class="settings-panel" id="security-panel">
+                    <div class="settings-section">
+                        <div class="settings-section-header">
+                            <i class="fas fa-shield-alt"></i> Security Settings
+                        </div>
+                        <div class="settings-section-content">
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <div class="setting-label">Two-Factor Authentication</div>
+                                    <div class="setting-description">Add extra security to your account</div>
+                                </div>
+                                <div class="setting-control">
+                                    <button class="btn-primary-small" onclick="setup2FA()">Setup 2FA</button>
+                                </div>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <div class="setting-label">Session Timeout</div>
+                                    <div class="setting-description">Auto-logout after inactivity</div>
+                                </div>
+                                <div class="setting-control">
+                                    <select class="form-select-small" id="sessionTimeout">
+                                        <option value="15">15 minutes</option>
+                                        <option value="30" selected>30 minutes</option>
+                                        <option value="60">1 hour</option>
+                                        <option value="120">2 hours</option>
+                                        <option value="0">Never</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <div class="setting-label">Login Attempts</div>
+                                    <div class="setting-description">Max failed login attempts before lockout</div>
+                                </div>
+                                <div class="setting-control">
+                                    <select class="form-select-small" id="loginAttempts">
+                                        <option value="3">3 attempts</option>
+                                        <option value="5" selected>5 attempts</option>
+                                        <option value="10">10 attempts</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <div class="setting-label">Password Policy</div>
+                                    <div class="setting-description">Enforce strong passwords</div>
+                                </div>
+                                <div class="setting-control">
+                                    <div class="toggle-switch active" id="passwordPolicy" onclick="toggleSetting('passwordPolicy')"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Backup Settings Panel -->
+                <div class="settings-panel" id="backup-panel">
+                    <div class="settings-section">
+                        <div class="settings-section-header">
+                            <i class="fas fa-cloud-upload-alt"></i> Backup & Recovery
+                        </div>
+                        <div class="settings-section-content">
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <div class="setting-label">Automatic Backup</div>
+                                    <div class="setting-description">Schedule regular backups</div>
+                                </div>
+                                <div class="setting-control">
+                                    <div class="toggle-switch active" id="autoBackup" onclick="toggleSetting('autoBackup')"></div>
+                                </div>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <div class="setting-label">Backup Frequency</div>
+                                    <div class="setting-description">How often to create backups</div>
+                                </div>
+                                <div class="setting-control">
+                                    <select class="form-select-small" id="backupFrequency">
+                                        <option value="daily" selected>Daily</option>
+                                        <option value="weekly">Weekly</option>
+                                        <option value="monthly">Monthly</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <div class="setting-label">Backup Status</div>
+                                    <div class="setting-description">Last backup: 2 hours ago</div>
+                                </div>
+                                <div class="setting-control">
+                                    <div class="backup-status">
+                                        <div class="status-indicator online"></div>
+                                        <span>Active</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <div class="setting-label">Manual Backup</div>
+                                    <div class="setting-description">Create backup now</div>
+                                </div>
+                                <div class="setting-control">
+                                    <button class="btn-primary-small" onclick="createBackup()">Backup Now</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- System Settings Panel -->
+                <div class="settings-panel" id="system-panel">
+                    <div class="settings-section">
+                        <div class="settings-section-header">
+                            <i class="fas fa-server"></i> System Information
+                        </div>
+                        <div class="settings-section-content">
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <div class="setting-label">System Version</div>
+                                    <div class="setting-description">Accounting System v2.1.0</div>
+                                </div>
+                                <div class="setting-control">
+                                    <button class="btn-secondary-small" onclick="checkUpdates()">Check Updates</button>
+                                </div>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <div class="setting-label">Database Size</div>
+                                    <div class="setting-description">Current database usage</div>
+                                </div>
+                                <div class="setting-control">
+                                    <div style="width: 120px;">
+                                        <div class="progress-bar">
+                                            <div class="progress-fill" style="width: 65%;"></div>
+                                        </div>
+                                        <small>156 MB / 240 MB</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <div class="setting-label">Clear Cache</div>
+                                    <div class="setting-description">Clear system cache and temporary files</div>
+                                </div>
+                                <div class="setting-control">
+                                    <button class="btn-secondary-small" onclick="clearCache()">Clear Cache</button>
+                                </div>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <div class="setting-label">Export Data</div>
+                                    <div class="setting-description">Export all system data</div>
+                                </div>
+                                <div class="setting-control">
+                                    <button class="btn-primary-small" onclick="exportData()">Export</button>
+                                </div>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <div class="setting-label">Reset Settings</div>
+                                    <div class="setting-description">Reset all settings to default</div>
+                                </div>
+                                <div class="setting-control">
+                                    <button class="btn-danger-small" onclick="resetSettings()">Reset</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Save Button -->
+                <div style="margin-top: 20px; text-align: right;">
+                    <button class="btn-primary" onclick="saveAllSettings()" style="padding: 8px 20px;">
+                        <i class="fas fa-save"></i> Save All Settings
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../JS-FOLDER/settings.js"></script>
+</body>
+</html>
