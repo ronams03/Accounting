@@ -38,6 +38,12 @@ function initializeSettings() {
             }
         }
     });
+
+    // Ensure theme mode is applied on load
+    const mode = savedSettings.themeMode || 'light';
+    if (typeof applyThemeMode === 'function') {
+        applyThemeMode(mode);
+    }
 }
 
 function setupEventListeners() {
@@ -64,24 +70,27 @@ function setupNavigation() {
     const navLinks = document.querySelectorAll('.nav-link');
     navLinks.forEach(link => {
         link.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            // Remove active class from all nav items
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            
-            // Add active class to clicked nav item
-            this.parentElement.classList.add('active');
-            
-            // Handle navigation routing
-            const href = this.getAttribute('href');
-            handleNavigation(href);
-            
-            // Update header title
-            const headerTitle = document.querySelector('.header h1');
-            const linkText = this.querySelector('span').textContent;
-            headerTitle.textContent = linkText;
+            const href = this.getAttribute('href') || '';
+            // Only intercept hash links; allow real pages to navigate normally
+            if (href.startsWith('#')) {
+                e.preventDefault();
+                
+                // Remove active class from all nav items
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                // Add active class to clicked nav item
+                this.parentElement.classList.add('active');
+                
+                // Handle navigation routing
+                handleNavigation(href);
+                
+                // Update header title
+                const headerTitle = document.querySelector('.header h1');
+                const linkText = this.querySelector('span').textContent;
+                if (headerTitle) headerTitle.textContent = linkText;
+            }
         });
     });
 }
@@ -478,6 +487,12 @@ function initializeModernSettings() {
     
     // Handle toggle dependencies
     initializeToggleDependencies();
+
+    // Initialize autosave controls visibility based on saved toggle
+    const settings = getSettings();
+    const autosaveEnabled = !!settings.enableAutosave || document.getElementById('enableAutosave')?.checked;
+    const autosaveInterval = document.getElementById('autosaveInterval');
+    if (autosaveInterval) autosaveInterval.style.display = autosaveEnabled ? 'block' : 'none';
 }
 
 function loadModernSettings() {
@@ -535,6 +550,10 @@ function setupModernEventListeners() {
                 saveModernSetting(this.name, this.value);
                 applyModernSettings();
                 showNotification('Setting updated successfully', 'success');
+                // Keep General -> Date Format radio group in sync with current time display
+                if (this.name === 'dateFormat') {
+                    updateCurrentTime();
+                }
             }
         });
     });
@@ -549,6 +568,12 @@ function setupModernEventListeners() {
             
             // Handle dependent settings
             handleToggleDependencies(this);
+
+            // Special handling for autosave visibility
+            if (this.id === 'enableAutosave') {
+                const autosaveInterval = document.getElementById('autosaveInterval');
+                if (autosaveInterval) autosaveInterval.style.display = this.checked ? 'block' : 'none';
+            }
         });
     });
     
@@ -569,30 +594,39 @@ function initializeIntervalButtons() {
     const intervalGroups = document.querySelectorAll('.interval-buttons');
     intervalGroups.forEach(group => {
         const buttons = group.querySelectorAll('.interval-btn');
-        const settingName = group.dataset.setting || 'backupInterval';
-        
+        const parentSelector = group.closest('.interval-selector');
+        const settingName = group.dataset.setting || (parentSelector && parentSelector.id === 'autosaveInterval' ? 'autosaveInterval' : 'backupInterval');
+
+        // Initialize active state based on saved numeric seconds
+        const settings = getSettings();
+        const savedValue = parseInt(settings[settingName]);
+        if (!isNaN(savedValue)) {
+            buttons.forEach(btn => {
+                const val = parseInt(btn.dataset.value || '0');
+                if (val === savedValue) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        } else if (buttons.length > 0) {
+            buttons.forEach(btn => btn.classList.remove('active'));
+            buttons[0].classList.add('active');
+        }
+
+        // Attach listeners as a fallback (in addition to inline handlers)
         buttons.forEach(button => {
             button.addEventListener('click', function() {
                 buttons.forEach(btn => btn.classList.remove('active'));
                 this.classList.add('active');
-                
-                saveModernSetting(settingName, this.textContent);
-                applyModernSettings();
-                showNotification('Interval updated successfully', 'success');
-            });
-        });
-        
-        // Load saved interval
-        const settings = getSettings();
-        if (settings[settingName]) {
-            buttons.forEach(btn => {
-                if (btn.textContent === settings[settingName]) {
-                    btn.classList.add('active');
+                const value = parseInt(this.dataset.value || '0');
+                if (!isNaN(value)) {
+                    saveModernSetting(settingName, value);
+                    applyModernSettings();
+                    showNotification('Interval updated successfully', 'success');
                 }
             });
-        } else if (buttons.length > 0) {
-            buttons[0].classList.add('active');
-        }
+        });
     });
 }
 
@@ -606,7 +640,9 @@ function initializeNumberSelectors() {
         if (decreaseBtn) {
             decreaseBtn.addEventListener('click', function() {
                 const currentValue = parseInt(input.value) || 0;
-                const newValue = Math.max(0, currentValue - 1);
+                const step = parseInt(input.step || '1');
+                const min = parseInt(input.min || '0');
+                const newValue = Math.max(min, currentValue - step);
                 input.value = newValue;
                 saveModernSetting(input.id, newValue);
                 applyModernSettings();
@@ -617,7 +653,9 @@ function initializeNumberSelectors() {
         if (increaseBtn) {
             increaseBtn.addEventListener('click', function() {
                 const currentValue = parseInt(input.value) || 0;
-                const newValue = currentValue + 1;
+                const step = parseInt(input.step || '1');
+                const max = parseInt(input.max || '999999');
+                const newValue = Math.min(max, currentValue + step);
                 input.value = newValue;
                 saveModernSetting(input.id, newValue);
                 applyModernSettings();
@@ -650,6 +688,20 @@ function initializeQuickOptions() {
                 }
             });
         });
+
+        // Initialize active state based on saved value or related input
+        const relatedInput = group.parentElement.querySelector('input');
+        const settings = getSettings();
+        const currentVal = (settingName && settings[settingName]) || (relatedInput ? relatedInput.value : undefined);
+        if (currentVal !== undefined) {
+            buttons.forEach(btn => {
+                const btnVal = btn.dataset.value || btn.textContent;
+                if (String(btnVal) == String(currentVal)) {
+                    buttons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                }
+            });
+        }
     });
 }
 
@@ -705,7 +757,7 @@ function updateOverviewCards() {
                 valueElement.textContent = getCurrencyDisplay(settings.currency || 'USD');
                 break;
             case 'Auto-save':
-                const autosaveInterval = settings.autosaveInterval || 60;
+                const autosaveInterval = parseInt(settings.autosaveInterval || 60);
                 if (autosaveInterval < 60) {
                     valueElement.textContent = `Every ${autosaveInterval}s`;
                 } else {
@@ -730,10 +782,17 @@ function applyModernSettings() {
     const settings = getSettings();
     
     // Apply theme
-    if (settings.theme === 'dark') {
-        document.body.classList.add('dark-theme');
+    // Use themeMode consistently ('light' | 'dark' | 'auto')
+    const mode = settings.themeMode || 'light';
+    if (typeof applyThemeMode === 'function') {
+        applyThemeMode(mode);
     } else {
-        document.body.classList.remove('dark-theme');
+        // Fallback simple application
+        if (mode === 'dark' || (mode === 'auto' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.body.classList.add('dark-theme');
+        } else {
+            document.body.classList.remove('dark-theme');
+        }
     }
     
     // Apply language
@@ -756,12 +815,8 @@ function applyModernSettings() {
         console.log('Date format set to:', settings.dateFormat);
     }
     
-    // Update last backup time if auto backup is enabled
-    if (settings.autoBackup && settings.backupInterval) {
-        settings.lastBackup = new Date().toLocaleString();
-        localStorage.setItem('accountingSettings', JSON.stringify(settings));
-        updateOverviewCards();
-    }
+    // Update overview card values
+    updateOverviewCards();
 }
 
 // General Sub-navigation Functions
@@ -865,7 +920,7 @@ function formatTimeDisplay(date, dateFormat) {
             dateString = `${month}/${day}/${year}`;
     }
     
-    return `${timeString}`;
+    return `${dateString} ${timeString}`;
 }
 
 // Update time when timezone or date format changes
@@ -1065,7 +1120,10 @@ function updateSidebarWidth(width) {
     // Update main content margin
     const mainContent = document.querySelector('.main-content');
     if (mainContent) {
-        mainContent.style.marginLeft = width + 'px';
+        // Respect collapsed state (header handles class toggling); avoid breaking layout
+        if (!document.getElementById('sidebar')?.classList.contains('collapsed')) {
+            mainContent.style.marginLeft = width + 'px';
+        }
     }
     
     saveModernSetting('sidebarWidth', width);
